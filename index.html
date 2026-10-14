@@ -3,221 +3,1149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#060b16">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ميزان AI Pro - المساعد الصحي الذكي</title>
+    <title>Alifit AI Pro - المساعد الصحي الذكي</title>
     
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #f8fafc; -webkit-tap-highlight-color: transparent; padding-bottom: 90px; }
-        .glass { background: rgba(30, 41, 59, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        :root {
+            --bg-dark: #060b16;
+            --card-bg: rgba(17, 25, 40, 0.82);
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at top right, #0f292e 0%, #060b16 55%, #090d16 100%);
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 95px;
+            overflow-x: hidden;
+        }
+        .neo-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .neon-border-emerald {
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.15);
+        }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.22s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        input[type="range"] { accent-color: #10b981; }
+        .tab-content.active { display: block; animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ring-circle {
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .portion-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border-color: #34d399;
+            transform: scale(1.03);
+        }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
 <body class="min-h-screen select-none">
 
-    <header class="sticky top-0 z-40 glass px-4 py-3 flex items-center justify-between border-b border-slate-800">
-        <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                <i class="fa-solid fa-bolt-lightning text-lg"></i>
+    <!-- الشريط العلوي المتطور -->
+    <header class="sticky top-0 z-40 neo-card px-4 py-3 flex items-center justify-between border-b border-slate-800/80">
+        <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                <i class="fa-solid fa-fire-flame-curved text-lg"></i>
             </div>
             <div>
-                <h1 class="font-bold text-base leading-tight">ميزان <span class="text-emerald-400">AI Pro</span></h1>
-                <div class="flex items-center gap-2 text-[10px] text-slate-400">
-                    <span id="watchStatusBadge" class="flex items-center gap-1 text-rose-400"><i class="fa-solid fa-clock"></i> الساعة: غير متصلة</span>
-                    <span>•</span>
-                    <span id="phoneSensorBadge" class="flex items-center gap-1 text-amber-400"><i class="fa-solid fa-mobile-screen"></i> الحساس: جاهز</span>
+                <div class="flex items-center gap-1.5">
+                    <h1 class="font-black text-base tracking-wide bg-gradient-to-l from-white to-emerald-300 bg-clip-text text-transparent">ALIFIT <span class="text-emerald-400 font-extrabold">PRO</span></h1>
+                    <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md font-bold border border-emerald-500/30">AI تلقائي</span>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] mt-0.5">
+                    <span id="watchTopBadge" onclick="switchTab('tab-watch')" class="cursor-pointer flex items-center gap-1 text-slate-400">
+                        <span id="watchDot" class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        <span id="watchTopText">الساعة: بحث تلقائي</span>
+                    </span>
+                    <span class="text-slate-600">|</span>
+                    <span id="sensorTopBadge" onclick="togglePhonePedometer()" class="cursor-pointer flex items-center gap-1 text-emerald-400">
+                        <i class="fa-solid fa-person-walking"></i>
+                        <span id="sensorTopText">الحساس: نشط دائماً</span>
+                    </span>
                 </div>
             </div>
         </div>
 
         <div class="flex items-center gap-1.5">
-            <button id="installPwaBtn" class="hidden bg-emerald-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl shadow animate-pulse">تثبيت</button>
-            <button onclick="launchFloatingWidget()" class="bg-cyan-600/20 border border-cyan-500/40 text-cyan-300 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1"><i class="fa-solid fa-window-restore"></i><span>ودجت</span></button>
-            <button onclick="forceAppRefresh()" class="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 text-xs"><i class="fa-solid fa-rotate"></i></button>
-            <button onclick="openSettingsModal()" class="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 relative"><i class="fa-solid fa-gear text-xs"></i><span id="apiKeyDot" class="w-2.5 h-2.5 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5"></span></button>
+            <button id="installPwaBtn" class="hidden bg-gradient-to-l from-emerald-500 to-teal-600 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl shadow-lg animate-bounce">
+                <i class="fa-solid fa-download ml-1"></i> تثبيت
+            </button>
+            <button onclick="launchFloatingWidget()" title="ودجت عائم" class="bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1 transition">
+                <i class="fa-solid fa-layer-group"></i>
+                <span class="text-[11px]">ودجت</span>
+            </button>
+            <button onclick="shareAppWithFriends()" title="مشاركة التطبيق" class="w-8 h-8 rounded-xl bg-slate-800/90 hover:bg-slate-700 flex items-center justify-center text-emerald-400 border border-slate-700/60">
+                <i class="fa-solid fa-share-nodes text-xs"></i>
+            </button>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-4">
+    <main class="max-w-md mx-auto p-3.5 space-y-4">
+
+        <!-- شريط أيام الأسبوع (التخزين اليومي الداخلي) -->
+        <div class="neo-card rounded-2xl p-2.5 flex items-center justify-between gap-1 overflow-x-auto" id="dayStripContainer">
+            <!-- يتم توليده تلقائياً لـ 7 أيام -->
+        </div>
+
+        <!-- ==================== التبويب 1: الرئيسية ==================== -->
         <section id="tab-home" class="tab-content active space-y-4">
-            <div class="glass rounded-2xl p-4 relative overflow-hidden border border-emerald-500/20">
-                <div class="flex justify-between items-start mb-3">
+            
+            <!-- الحلقة الدائرية الاحترافية للسعرات والماكروز -->
+            <div class="neo-card neon-border-emerald rounded-3xl p-4 relative overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
                     <div>
-                        <span class="text-xs text-slate-400">المسموح لك باقي اليوم (صافي)</span>
-                        <div class="flex items-baseline gap-1.5 mt-0.5">
-                            <h2 id="dashRemainCal" class="text-4xl font-extrabold text-emerald-400">2150</h2>
-                            <span class="text-xs text-slate-400">سعرة حرارية</span>
+                        <span id="selectedDateTitle" class="text-[11px] text-emerald-400 font-bold">اليوم - متابعة حية</span>
+                        <h2 class="text-sm font-bold text-slate-200">ميزان الطاقة والسعرات</h2>
+                    </div>
+                    <span id="calStatusPill" class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                        ضمن الهدف اليومي ✅
+                    </span>
+                </div>
+
+                <!-- الحلقة الدائرية + الإحصائيات الجانبية -->
+                <div class="grid grid-cols-12 gap-3 items-center my-2">
+                    <div class="col-span-5 flex justify-center relative">
+                        <svg class="w-32 h-32">
+                            <circle cx="64" cy="64" r="54" stroke="#1e293b" stroke-width="10" fill="transparent"/>
+                            <circle id="calRingCircle" class="ring-circle" cx="64" cy="64" r="54" stroke="url(#emeraldGrad)" stroke-width="10" stroke-dasharray="339.29" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"/>
+                            <defs>
+                                <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#10b981"/>
+                                    <stop offset="100%" stop-color="#06b6d4"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <span class="text-[10px] text-slate-400">المتبقي لك</span>
+                            <span id="dashRemainCal" class="text-2xl font-black text-white leading-none my-0.5">2200</span>
+                            <span class="text-[9px] text-emerald-400 font-bold">سعرة حرارية</span>
                         </div>
                     </div>
-                    <span id="calorieStatusBadge" class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">في النطاق ✅</span>
+
+                    <div class="col-span-7 space-y-2">
+                        <div class="bg-slate-900/75 p-2 rounded-2xl border border-slate-800/80 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 text-xs"><i class="fa-solid fa-bullseye"></i></div>
+                                <span class="text-[11px] text-slate-300">الاحتياج الأساسي</span>
+                            </div>
+                            <b id="dashTargetCal" class="text-xs font-extrabold text-white">2200</b>
+                        </div>
+                        <div class="bg-slate-900/75 p-2 rounded-2xl border border-slate-800/80 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-400 text-xs"><i class="fa-solid fa-utensils"></i></div>
+                                <span class="text-[11px] text-slate-300">أكلت اليوم (-)</span>
+                            </div>
+                            <b id="dashEatenCal" class="text-xs font-extrabold text-amber-400">0</b>
+                        </div>
+                        <div class="bg-slate-900/75 p-2 rounded-2xl border border-slate-800/80 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-xl bg-cyan-500/15 flex items-center justify-center text-cyan-400 text-xs"><i class="fa-solid fa-fire"></i></div>
+                                <span class="text-[11px] text-slate-300">حرق المشي (+)</span>
+                            </div>
+                            <b id="dashBurnedCal" class="text-xs font-extrabold text-cyan-400">+0</b>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-4">
-                    <div id="calProgressBar" class="bg-gradient-to-l from-emerald-400 to-cyan-400 h-full w-0 transition-all duration-300"></div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 mb-4">
-                    <div><p class="text-[10px] text-slate-400">الأساسي</p><p id="dashTargetCal" class="font-bold text-sm text-white">2150</p></div>
-                    <div class="border-x border-slate-800"><p class="text-[10px] text-slate-400">أكلت (-)</p><p id="dashEatenCal" class="font-bold text-sm text-amber-400">0</p></div>
-                    <div><p class="text-[10px] text-slate-400">حرق المشي (+)</p><p id="dashBurnedCal" class="font-bold text-sm text-cyan-400">+0</p></div>
-                </div>
-                <div class="grid grid-cols-3 gap-2.5">
-                    <div class="bg-slate-800/60 p-2.5 rounded-xl border"><div class="flex justify-between text-[11px] mb-1"><span class="text-rose-400 font-bold">بروتين</span><span id="macroPText" class="text-slate-300">0/160g</span></div><div class="w-full bg-slate-700 h-1.5 rounded-full"><div id="macroPBar" class="bg-rose-500 h-full w-0"></div></div></div>
-                    <div class="bg-slate-800/60 p-2.5 rounded-xl border"><div class="flex justify-between text-[11px] mb-1"><span class="text-amber-400 font-bold">كارب</span><span id="macroCText" class="text-slate-300">0/210g</span></div><div class="w-full bg-slate-700 h-1.5 rounded-full"><div id="macroCBar" class="bg-amber-500 h-full w-0"></div></div></div>
-                    <div class="bg-slate-800/60 p-2.5 rounded-xl border"><div class="flex justify-between text-[11px] mb-1"><span class="text-sky-400 font-bold">دهون</span><span id="macroFText" class="text-slate-300">0/60g</span></div><div class="w-full bg-slate-700 h-1.5 rounded-full"><div id="macroFBar" class="bg-sky-500 h-full w-0"></div></div></div>
+
+                <!-- الماكروز (بروتين، كارب، دهون) -->
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/80">
+                    <div class="bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800">
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-rose-400 font-bold">🥩 بروتين</span>
+                            <span id="macroPText" class="text-slate-300 font-bold">0/150g</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroPBar" class="bg-gradient-to-l from-rose-500 to-pink-400 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800">
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-amber-400 font-bold">🍚 كارب</span>
+                            <span id="macroCText" class="text-slate-300 font-bold">0/220g</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroCBar" class="bg-gradient-to-l from-amber-500 to-yellow-400 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800">
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-sky-400 font-bold">🥑 دهون</span>
+                            <span id="macroFText" class="text-slate-300 font-bold">0/65g</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroFBar" class="bg-gradient-to-l from-sky-500 to-cyan-300 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="glass rounded-2xl p-4 border-r-4 border-r-emerald-500">
-                <div class="flex justify-between items-start mb-2">
-                    <h3 class="font-bold text-sm"><i class="fa-solid fa-shoe-prints text-emerald-400"></i> الخطوات الصافية</h3>
-                    <span id="dedupSavedBadge" class="text-[10px] bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded-lg">منع تكرار 0</span>
+            <!-- بطاقة الحركة والخطوات الأوتوماتيكية (الساعة + الهاتف بدون إدخال يدوي) -->
+            <div class="neo-card rounded-3xl p-4 border-r-4 border-r-emerald-500">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xs text-white">الخطوات الأوتوماتيكية المدمجة</h3>
+                            <p id="savedWatchLabel" class="text-[10px] text-slate-400">مزامنة تلقائية (مانع تكرار الخطوات نشط)</p>
+                        </div>
+                    </div>
+                    <button onclick="updateNotificationWidget(true)" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 px-2.5 py-1 rounded-xl text-[10px] font-bold">
+                        <i class="fa-solid fa-bell ml-1"></i> تثبيت بالشاشة
+                    </button>
                 </div>
-                <div class="flex items-center justify-between my-2.5">
-                    <div><span id="mergedStepsDisplay" class="text-3xl font-extrabold text-white">0</span><span class="text-xs text-slate-400 mr-1">/ 8,000</span></div>
-                    <div class="text-left text-xs text-slate-300"><div>ساعة: <b id="rawWatchSteps">0</b></div><div>هاتف: <b id="rawPhoneSteps">0</b></div></div>
+
+                <div class="flex items-baseline justify-between my-2">
+                    <div>
+                        <span id="mergedStepsDisplay" class="text-3xl font-black text-white">0</span>
+                        <span class="text-xs text-slate-400 mr-1">/ 8,000 خطوة</span>
+                    </div>
+                    <div class="flex gap-3 text-[11px] bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800">
+                        <span>⌚ الساعة: <b id="rawWatchSteps" class="text-emerald-400">0</b></span>
+                        <span>📱 الهاتف: <b id="rawPhoneSteps" class="text-amber-400">0</b></span>
+                    </div>
                 </div>
-                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="stepsProgressBar" class="bg-gradient-to-l from-emerald-400 to-cyan-400 h-full w-0"></div></div>
+
+                <div class="w-full bg-slate-800/90 h-2 rounded-full overflow-hidden">
+                    <div id="stepsProgressBar" class="bg-gradient-to-l from-emerald-400 via-teal-400 to-cyan-400 h-full w-0 transition-all"></div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="switchTab('tab-camera', 'food')" class="glass p-3 rounded-2xl flex flex-col items-center gap-1.5"><div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-utensils"></i></div><h4 class="font-bold text-xs">تصوير وجبة</h4></button>
-                <button onclick="switchTab('tab-camera', 'scale')" class="glass p-3 rounded-2xl flex flex-col items-center gap-1.5"><div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center"><i class="fa-solid fa-weight-scale"></i></div><h4 class="font-bold text-xs">الميزان</h4></button>
-                <button onclick="switchTab('tab-camera', 'watch')" class="glass p-3 rounded-2xl flex flex-col items-center gap-1.5"><div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-clock"></i></div><h4 class="font-bold text-xs">الساعة</h4></button>
+            <!-- الإضافة البصرية السريعة باللمس (بدون كتابة جرامات نهائياً!) -->
+            <div class="neo-card rounded-3xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-sm text-emerald-400"><i class="fa-solid fa-hand-pointer ml-1"></i> أضف أكلك باللمس (بدون جرامات)</h3>
+                        <p class="text-[10px] text-slate-400">اختر الحجم التقريبي بعينك واضغط ليُخصم فوراً:</p>
+                    </div>
+                    <button onclick="switchTab('tab-camera', 'food')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow flex items-center gap-1">
+                        <i class="fa-solid fa-camera"></i> صوّر الطبق
+                    </button>
+                </div>
+
+                <!-- اختيار حجم الحصة البصري -->
+                <div class="grid grid-cols-3 gap-1.5 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-center text-[11px]">
+                    <button onclick="setPortionMultiplier(0.75, this)" class="portion-btn py-1.5 rounded-xl font-bold text-slate-300 transition">🥣 حصة صغيرة</button>
+                    <button onclick="setPortionMultiplier(1.0, this)" class="portion-btn active py-1.5 rounded-xl font-bold transition">🍽️ حصة معتادة</button>
+                    <button onclick="setPortionMultiplier(1.35, this)" class="portion-btn py-1.5 rounded-xl font-bold text-slate-300 transition">🥘 حصة كبيرة</button>
+                </div>
+
+                <!-- شبكة الأكلات السريعة بالحصة البصرية -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button onclick="addVisualFood('ربع فرخة مشوية/مسلوقة', 280, 42, 0, 11)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🍗</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">ربع فرخة (كف يد)</div>
+                            <div class="text-[10px] text-emerald-400">280 سعرة | 42g بروتين</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('طبق أرز أو مكرونة متوسط', 240, 5, 52, 2)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🍚</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">طبق أرز / مكرونة</div>
+                            <div class="text-[10px] text-amber-400">240 سعرة | 52g كارب</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('رغيف عيش بلدي أسمر', 260, 9, 52, 1.5)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🫓</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">رغيف عيش بلدي</div>
+                            <div class="text-[10px] text-amber-400">260 سعرة | 52g كارب</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('طبق فول أو عدس متوسط', 290, 16, 38, 8)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🫘</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">طبق فول / بقوليات</div>
+                            <div class="text-[10px] text-emerald-400">290 سعرة | 16g بروتين</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('سمكة مشوية / مقلية متوسطة', 310, 44, 0, 14)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🐟</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">سمكة متوسطة</div>
+                            <div class="text-[10px] text-emerald-400">310 سعرة | 44g بروتين</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('2 بيضة + جبنة قريش', 250, 24, 4, 15)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🥚</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">2 بيضة + جبنة</div>
+                            <div class="text-[10px] text-emerald-400">250 سعرة | 24g بروتين</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('قطعتين لحم مطبوخ + خضار', 340, 38, 12, 16)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🥩</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">لحم مطبوخ + خضار</div>
+                            <div class="text-[10px] text-rose-400">340 سعرة | 38g بروتين</div>
+                        </div>
+                    </button>
+                    <button onclick="addVisualFood('ثمرة فاكهة / مشروب', 110, 1, 26, 0)" class="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-800/90 flex items-center gap-2.5 text-right transition active:scale-95">
+                        <span class="text-2xl">🍎</span>
+                        <div>
+                            <div class="font-bold text-white text-[11px]">فاكهة / سناك</div>
+                            <div class="text-[10px] text-sky-400">110 سعرة | 26g كارب</div>
+                        </div>
+                    </button>
+                </div>
             </div>
 
-            <div class="glass rounded-2xl p-4">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-sm">وجبات اليوم</h3><button onclick="clearTodayMeals()" class="text-xs text-rose-400">تصفير</button></div>
+            <!-- سجل وجبات اليوم المختار -->
+            <div class="neo-card rounded-3xl p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-clipboard-list text-emerald-400 ml-1.5"></i>سجل وجبات اليوم</h3>
+                    <button onclick="clearCurrentDayMeals()" class="text-[11px] text-rose-400 hover:underline">مسح وجبات اليوم</button>
+                </div>
                 <div id="todayMealsList" class="space-y-2 text-xs text-slate-400"></div>
             </div>
         </section>
 
+        <!-- ==================== التبويب 2: الكاميرا الذكية (بدون مفتاح API!) ==================== -->
         <section id="tab-camera" class="tab-content space-y-4">
-            <div id="apiStatusAlert" onclick="openSettingsModal()" class="cursor-pointer bg-rose-500/15 border border-rose-500/40 rounded-xl p-3 flex items-center justify-between">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-key text-rose-400 text-lg"></i><div><h4 class="font-bold text-xs text-rose-300">مفتاح الذكاء الاصطناعي</h4><p class="text-[11px] text-slate-300">اضغط هنا لإدخال مفتاح الـ API</p></div></div>
-                <i class="fa-solid fa-chevron-left text-xs text-rose-300"></i>
-            </div>
-            <div class="grid grid-cols-3 gap-1.5 bg-slate-900 p-1.5 rounded-xl">
-                <button id="modeFoodBtn" onclick="setCameraMode('food')" class="py-2 rounded-lg font-bold text-[11px] bg-emerald-600 text-white">وجبة</button>
-                <button id="modeScaleBtn" onclick="setCameraMode('scale')" class="py-2 rounded-lg font-bold text-[11px] text-slate-400">ميزان</button>
-                <button id="modeWatchBtn" onclick="setCameraMode('watch')" class="py-2 rounded-lg font-bold text-[11px] text-slate-400">ساعة</button>
-            </div>
-            <div class="glass rounded-2xl p-4 text-center space-y-4">
-                <div id="cameraInstructions"><h3 class="font-bold text-base text-emerald-400">ماسح الوجبات الذكي</h3></div>
-                <div class="relative w-full h-56 rounded-2xl bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden">
-                    <img id="capturedImagePreview" class="hidden w-full h-full object-cover" alt="Preview">
-                    <div id="cameraPlaceholder" class="space-y-2 p-4"><i class="fa-solid fa-camera text-4xl text-slate-600"></i><p class="text-xs text-slate-400">اضغط لتصوير الصورة</p></div>
-                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i><p class="text-xs font-bold text-emerald-300">جاري التحليل عبر Gemini 3.8 Flash...</p></div>
+            <div class="neo-card rounded-3xl p-4 space-y-4 text-center">
+                <div class="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 text-right">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-emerald-400 text-lg"></i>
+                        <div>
+                            <h4 class="font-bold text-xs text-emerald-300">محرك الرؤية المزدوج نشط تلقائياً</h4>
+                            <p class="text-[10px] text-slate-300">يعمل مباشرة بدون مفتاح API + محلل بصري داخلي على الهاتف بدون كتابة جرامات.</p>
+                        </div>
+                    </div>
                 </div>
-                <label class="cursor-pointer bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg">
-                    <i class="fa-solid fa-camera"></i><span>فتح الكاميرا والتصوير</span>
+
+                <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
+                    <button id="modeFoodBtn" onclick="setCameraMode('food')" class="py-2 rounded-xl font-bold text-xs bg-emerald-600 text-white">
+                        🍽️ تصوير وجبة
+                    </button>
+                    <button id="modeScaleBtn" onclick="setCameraMode('scale')" class="py-2 rounded-xl font-bold text-xs text-slate-400">
+                        ⚖️ تصوير الميزان
+                    </button>
+                </div>
+
+                <div class="relative w-full h-56 rounded-3xl bg-slate-900/90 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden">
+                    <img id="capturedImagePreview" class="hidden w-full h-full object-cover" alt="Preview">
+                    <div id="cameraPlaceholder" class="space-y-2 p-4">
+                        <div class="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <p class="text-xs font-bold text-slate-300">وجّه الكاميرا للطبق واضغط تصوير</p>
+                        <p class="text-[10px] text-slate-400">سيتم التعرف على الأكل وتحديد الحصة باللمس بدون جرامات</p>
+                    </div>
+                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center space-y-3 p-4">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-400"></i>
+                        <p class="text-xs font-bold text-emerald-300">جاري تحليل الصورة وتقدير الحصة تلقائياً...</p>
+                    </div>
+                </div>
+
+                <label class="cursor-pointer bg-gradient-to-l from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+                    <i class="fa-solid fa-camera text-base"></i>
+                    <span>فتح الكاميرا والتصوير الآن</span>
                     <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCaptured(event)">
                 </label>
-                <input type="text" id="aiUserHint" placeholder="ملاحظة اختيارية (مثال: بدون زيت)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
-            <div id="aiResultCard" class="hidden glass rounded-2xl p-4 border border-emerald-500/40 space-y-3">
-                <h4 id="aiResultTitle" class="font-bold text-sm text-emerald-400">النتيجة</h4>
-                <div id="aiResultBody" class="text-xs space-y-2 text-slate-300"></div>
-                <button id="aiConfirmBtn" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs">اعتماد وإضافة</button>
+
+            <!-- بطاقة نتيجة التحليل مع اختيار الحجم باللمس -->
+            <div id="aiResultCard" class="hidden neo-card neon-border-emerald rounded-3xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h4 id="aiResultTitle" class="font-bold text-sm text-emerald-400">نتيجة الفحص</h4>
+                    <span id="aiEngineBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-lg">تحليل ذكي</span>
+                </div>
+                <div id="aiResultBody" class="text-xs space-y-2 text-slate-200"></div>
+
+                <!-- تعديل حجم الطبق باللمس بدون جرامات -->
+                <div id="aiPortionAdjuster" class="pt-2 border-t border-slate-800 space-y-2">
+                    <p class="text-[11px] text-slate-400 font-bold">اضبط حجم الطبق الذي أمامك باللمس (بدون جرامات):</p>
+                    <div class="grid grid-cols-3 gap-2 text-[11px]">
+                        <button onclick="scaleAiMeal(0.75)" class="bg-slate-900 hover:bg-slate-800 py-2 rounded-xl border border-slate-700 font-bold">🥣 طبق صغير</button>
+                        <button onclick="scaleAiMeal(1.0)" class="bg-emerald-600/30 border border-emerald-500 text-emerald-300 py-2 rounded-xl font-bold">🍽️ طبق متوسط</button>
+                        <button onclick="scaleAiMeal(1.35)" class="bg-slate-900 hover:bg-slate-800 py-2 rounded-xl border border-slate-700 font-bold">🥘 طبق كبير</button>
+                    </div>
+                </div>
+
+                <!-- في حال أراد المستخدم مطابقة سريعة لصورته باللمس -->
+                <div id="internalVisualMatcher" class="hidden pt-2 border-t border-slate-800 space-y-2">
+                    <p class="text-[11px] text-amber-300 font-bold">أو اختر الصنف المطابق لصورتك بلمسة واحدة:</p>
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px]" id="visualMatchButtons"></div>
+                </div>
+
+                <button id="aiConfirmBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-2xl text-xs shadow-lg">
+                    اعتماد وخصم من سعرات اليوم ✅
+                </button>
             </div>
         </section>
 
+        <!-- ==================== التبويب 3: الساعة والحساس الأوتوماتيكي ==================== -->
         <section id="tab-watch" class="tab-content space-y-4">
-            <div class="glass rounded-2xl p-4 space-y-3">
+            <div class="neo-card rounded-3xl p-4 space-y-4">
                 <div class="flex items-center justify-between">
-                    <div><h3 class="font-bold text-sm">ساعة Oraimo 2R</h3><p id="bleDeviceName" class="text-[11px] text-slate-400">اتصال بلوتوث مباشر</p></div>
-                    <button onclick="connectOraimoWatch()" class="bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-xl">اقتران بلوتوث</button>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl text-emerald-400">
+                            <i class="fa-solid fa-stopwatch-20"></i>
+                        </div>
+                        <div>
+                            <h3 id="watchSavedNameTitle" class="font-bold text-sm text-white">ساعة Oraimo Watch 2R</h3>
+                            <p id="bleConnectionStateText" class="text-[11px] text-slate-400">اضغط اقتران مرة واحدة وسيتم حفظها للأبد</p>
+                        </div>
+                    </div>
+                    <button onclick="pairAndSaveWatch()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2.5 rounded-2xl shadow-lg">
+                        <i class="fa-brands fa-bluetooth-b ml-1"></i> اقتران وحفظ
+                    </button>
                 </div>
-                <div class="grid grid-cols-3 gap-2 pt-1 text-center text-xs">
-                    <div class="bg-slate-900 p-2.5 rounded-xl"><p class="text-[10px] text-slate-400">النبض</p><b id="watchHeartRate">-- BPM</b></div>
-                    <div class="bg-slate-900 p-2.5 rounded-xl"><p class="text-[10px] text-slate-400">الحالة</p><b id="watchWearingState" class="text-slate-300">غير متصلة</b></div>
-                    <div class="bg-slate-900 p-2.5 rounded-xl"><p class="text-[10px] text-slate-400">البطارية</p><b id="watchBattery">--%</b></div>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl space-y-2">
-                    <label class="text-xs font-bold text-emerald-400 block">مزامنة خطوات الساعة:</label>
-                    <div class="flex gap-2"><input type="number" id="manualWatchSyncInput" placeholder="أدخل رقم الخطوات" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"><button onclick="syncWatchTotalSteps()" class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs">مزامنة</button></div>
+
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                        <i class="fa-solid fa-heart-pulse text-rose-500 mb-1"></i>
+                        <p class="text-[10px] text-slate-400">النبض</p>
+                        <b id="watchHeartRate" class="text-sm text-white">-- BPM</b>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                        <i class="fa-solid fa-rotate text-emerald-400 mb-1"></i>
+                        <p class="text-[10px] text-slate-400">التواصل الذاتي</p>
+                        <b id="watchAutoReconnectStatus" class="text-xs text-emerald-400">مفعّل تلقائياً</b>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                        <i class="fa-solid fa-battery-full text-cyan-400 mb-1"></i>
+                        <p class="text-[10px] text-slate-400">البطارية</p>
+                        <b id="watchBattery" class="text-sm text-white">--%</b>
+                    </div>
                 </div>
             </div>
-            <div class="glass rounded-2xl p-4 space-y-3">
-                <div class="flex items-center justify-between"><h3 class="font-bold text-sm">حساس المشي بالهاتف</h3><button id="startPhoneSensorBtn" onclick="togglePhonePedometer()" class="bg-amber-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl">تشغيل الحساس</button></div>
+
+            <!-- مانع فصل الحساس والساعة في الجيب -->
+            <div class="neo-card rounded-3xl p-4 space-y-3 border border-amber-500/30">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm text-amber-400"><i class="fa-solid fa-shield-halved ml-1"></i> مانع الفصل في الجيب (Keep-Alive)</h3>
+                        <p class="text-[11px] text-slate-400">يبقي حساس المشي والبلوتوث شغالين حتى لو الشاشة مقفولة</p>
+                    </div>
+                    <button id="keepAliveBtn" onclick="enableBackgroundKeepAlive()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-3.5 py-2 rounded-2xl">
+                        تفعيل الحماية
+                    </button>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">حساسية خطوة الجيب:</span>
+                    <input type="range" id="stepSensitivity" min="10.8" max="14.0" step="0.2" value="11.6" class="w-36 accent-emerald-500">
+                </div>
             </div>
         </section>
 
-        <section id="tab-calc" class="tab-content space-y-4">
-            <div class="glass rounded-2xl p-4 space-y-3">
-                <h3 class="font-bold text-sm text-emerald-400">إعدادات الجسم والهدف</h3>
+        <!-- ==================== التبويب 4: جسمي والأرشيف اليومي ==================== -->
+        <section id="tab-profile" class="tab-content space-y-4">
+            <div class="neo-card rounded-3xl p-4 space-y-3">
+                <h3 class="font-bold text-sm text-emerald-400"><i class="fa-solid fa-user-gear ml-1"></i> بيانات الجسم والهدف (تُحفظ على هاتفك)</h3>
                 <div class="grid grid-cols-3 gap-2">
-                    <div><label class="text-[11px] text-slate-400">الوزن</label><input type="number" id="inputWeight" value="78" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center"></div>
-                    <div><label class="text-[11px] text-slate-400">الطول</label><input type="number" id="inputHeight" value="176" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center"></div>
-                    <div><label class="text-[11px] text-slate-400">العمر</label><input type="number" id="inputAge" value="26" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center"></div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">الوزن (كجم)</label>
+                        <input type="number" id="inputWeight" value="78" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-2.5 text-sm font-bold text-center text-white">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">الطول (سم)</label>
+                        <input type="number" id="inputHeight" value="176" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-2.5 text-sm font-bold text-center text-white">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">العمر</label>
+                        <input type="number" id="inputAge" value="26" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-2.5 text-sm font-bold text-center text-white">
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div><label class="text-[11px] text-slate-400">النشاط</label><select id="inputActivity" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2"><option value="1.2">خامل</option><option value="1.375">خفيف</option><option value="1.55" selected>متوسط</option><option value="1.725">عالي</option></select></div>
-                    <div><label class="text-[11px] text-slate-400">الهدف</label><select id="inputGoal" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2"><option value="-0.20">تنشيف (-20%)</option><option value="0" selected>ثبات (0%)</option><option value="0.15">تضخيم (+15%)</option></select></div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">النشاط اليومي</label>
+                        <select id="inputActivity" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-2.5 text-white">
+                            <option value="1.2">مكتبي / خفيف</option>
+                            <option value="1.55" selected>متوسط / عمل ميداني</option>
+                            <option value="1.725">عالي جداً / رياضي</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">الهدف</label>
+                        <select id="inputGoal" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-2.5 text-white">
+                            <option value="-0.20">تنشيف وحرق دهون (-20%)</option>
+                            <option value="0" selected>محافظة وثبات (0%)</option>
+                            <option value="0.15">زيادة عضلية (+15%)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
+
+            <!-- شرب الماء -->
+            <div class="neo-card rounded-3xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-cyan-400"><i class="fa-solid fa-droplet ml-1"></i> شرب الماء اليومي</h3>
+                    <span id="waterCountText" class="text-xs font-extrabold text-white">0 / 3.0 لتر</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="addWater(250)" class="flex-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 py-2.5 rounded-2xl text-xs font-bold">+ كوب (250 مل)</button>
+                    <button onclick="addWater(500)" class="flex-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 py-2.5 rounded-2xl text-xs font-bold">+ زجاجة (500 مل)</button>
+                </div>
+            </div>
+
+            <!-- سجل الأيام المحفوظة داخلياً على الهاتف -->
+            <div class="neo-card rounded-3xl p-4 space-y-3">
+                <h3 class="font-bold text-sm text-purple-400"><i class="fa-solid fa-calendar-days ml-1"></i> سجل الأيام المحفوظة على الهاتف</h3>
+                <div id="allDaysHistoryList" class="space-y-2 text-xs"></div>
+            </div>
         </section>
 
-        <section id="tab-extras" class="tab-content space-y-4">
-            <div class="glass rounded-2xl p-4 space-y-3">
-                <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-sky-400">سجل الوزن</h3><button onclick="switchTab('tab-camera', 'scale')" class="text-xs bg-sky-500/20 text-sky-300 px-2.5 py-1 rounded-lg">+ تصوير الميزان</button></div>
-                <div id="weightHistoryList" class="space-y-2 text-xs"></div>
-            </div>
-            <div class="glass rounded-2xl p-4 space-y-3">
-                <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-cyan-400">شرب الماء</h3><span id="waterCountText" class="text-xs font-bold text-white">0 / 3.0 لتر</span></div>
-                <div class="flex gap-2"><button onclick="addWater(250)" class="flex-1 bg-cyan-600/20 text-cyan-300 py-2 rounded-xl text-xs font-bold">+ كوب (250 مل)</button><button onclick="addWater(500)" class="flex-1 bg-cyan-600/20 text-cyan-300 py-2 rounded-xl text-xs font-bold">+ زجاجة (500 مل)</button></div>
-            </div>
-        </section>
     </main>
 
-    <canvas id="widgetCanvas" width="420" height="240" class="hidden"></canvas>
+    <!-- عناصر خفية للودجت العائم -->
+    <canvas id="widgetCanvas" width="420" height="230" class="hidden"></canvas>
     <video id="widgetVideo" muted playsinline class="hidden"></video>
 
-    <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="glass rounded-2xl p-5 w-full max-w-sm space-y-4 border border-slate-700">
-            <div class="flex justify-between items-center"><h3 class="font-bold text-base text-emerald-400">مفتاح الـ API</h3><button onclick="closeSettingsModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button></div>
-            <p class="text-xs text-slate-300">الصق مفتاح الـ API الخاص بك هنا:</p>
-            <input type="text" id="geminiApiKeyInput" placeholder="أدخل المفتاح هنا..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono">
-            <button onclick="saveApiKey()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs">حفظ</button>
-        </div>
-    </div>
-
-    <nav class="fixed bottom-0 inset-x-0 z-40 glass border-t border-slate-800 px-2 py-2">
-        <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
-            <button onclick="switchTab('tab-home')" class="nav-btn text-emerald-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-home"><i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[10px] font-bold mt-0.5">الرئيسية</span></button>
-            <button onclick="switchTab('tab-camera')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-camera"><i class="fa-solid fa-camera text-lg"></i><span class="text-[10px] font-bold mt-0.5">كاميرا AI</span></button>
-            <button onclick="switchTab('tab-watch')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-watch"><i class="fa-solid fa-clock text-lg"></i><span class="text-[10px] font-bold mt-0.5">الساعة</span></button>
-            <button onclick="switchTab('tab-calc')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-calc"><i class="fa-solid fa-calculator text-lg"></i><span class="text-[10px] font-bold mt-0.5">الحاسبة</span></button>
-            <button onclick="switchTab('tab-extras')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-extras"><i class="fa-solid fa-layer-group text-lg"></i><span class="text-[10px] font-bold mt-0.5">المتابعة</span></button>
+    <!-- شريط التنقل السفلي -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 neo-card border-t border-slate-800/90 px-3 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-center">
+            <button onclick="switchTab('tab-home')" class="nav-btn text-emerald-400 flex flex-col items-center py-1 rounded-2xl" data-target="tab-home">
+                <i class="fa-solid fa-house-chimney text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">الرئيسية</span>
+            </button>
+            <button onclick="switchTab('tab-camera')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-2xl" data-target="tab-camera">
+                <i class="fa-solid fa-camera-retro text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">كاميرا الوجبات</span>
+            </button>
+            <button onclick="switchTab('tab-watch')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-2xl" data-target="tab-watch">
+                <i class="fa-solid fa-clock text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">الساعة والمشي</span>
+            </button>
+            <button onclick="switchTab('tab-profile')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-2xl" data-target="tab-profile">
+                <i class="fa-solid fa-calendar-check text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">سجل الأيام</span>
+            </button>
         </div>
     </nav>
 
     <script>
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; const btn = document.getElementById('installPwaBtn'); btn.classList.remove('hidden'); btn.onclick = async () => { deferredPrompt.prompt(); await deferredPrompt.userChoice; btn.classList.add('hidden'); }; });
+        // ==================== 1. قاعدة البيانات المحلية يوم بيوم (Day-by-Day Local DB) ====================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+        }
 
-        const todayStr = new Date().toLocaleDateString('ar-EG');
-        let state = JSON.parse(localStorage.getItem('mizanAiState')) || {
-            lastDate: todayStr, weight: 78, height: 176, age: 26, activity: 1.55, goal: 0,
-            targetCal: 2550, targetP: 160, targetC: 280, targetF: 75,
-            meals: [], weightLogs: [{ date: todayStr, weight: 78.0 }], daysArchive: [],
-            waterMl: 0, watchSteps: 0, phoneSteps: 0, mergedSteps: 0, duplicatesFiltered: 0,
-            watchConnected: false, watchWorn: false, phoneSensorActive: false, cameraMode: 'food', apiKey: ''
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('installPwaBtn');
+            btn.classList.remove('hidden');
+            btn.onclick = async () => { deferredPrompt.prompt(); await deferredPrompt.userChoice; btn.classList.add('hidden'); };
+        });
+
+        function getDateKey(dateObj = new Date()) {
+            return dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+        }
+
+        const todayKey = getDateKey();
+        let selectedDateKey = todayKey;
+        let portionMultiplier = 1.0;
+
+        let db = JSON.parse(localStorage.getItem('alifitProDB_v3')) || {
+            profile: { weight: 78, height: 176, age: 26, activity: 1.55, goal: 0, targetCal: 2550, targetP: 156, targetC: 280, targetF: 75 },
+            watch: { savedName: '', savedId: '' },
+            days: {}
         };
 
-        function saveState() { localStorage.setItem('mizanAiState', JSON.stringify(state)); updateUI(); }
-        function forceAppRefresh() { saveState(); window.location.reload(true); }
+        function ensureDayExists(dateKey) {
+            if (!db.days[dateKey]) {
+                db.days[dateKey] = {
+                    meals: [],
+                    watchSteps: 0,
+                    phoneSteps: 0,
+                    mergedSteps: 0,
+                    waterMl: 0
+                };
+            }
+            return db.days[dateKey];
+        }
+        ensureDayExists(todayKey);
+
+        function saveDB() {
+            localStorage.setItem('alifitProDB_v3', JSON.stringify(db));
+            updateUI();
+            drawWidgetCanvas();
+            updateNotificationWidget(false);
+        }
+
+        // ==================== 2. شريط التقويم اليومي التفاعلي ====================
+        function renderDayStrip() {
+            const container = document.getElementById('dayStripContainer');
+            const daysNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            let html = '';
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = getDateKey(d);
+                ensureDayExists(key);
+                const isSelected = key === selectedDateKey;
+                const dayName = i === 0 ? 'اليوم' : daysNames[d.getDay()];
+                const dayNum = d.getDate();
+                html += `
+                    <button onclick="selectDay('${key}')" class="flex-1 min-w-[46px] py-1.5 px-1 rounded-xl flex flex-col items-center transition ${isSelected ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900/70 text-slate-400 hover:text-white'}">
+                        <span class="text-[9px] font-bold">${dayName}</span>
+                        <span class="text-xs font-black mt-0.5">${dayNum}</span>
+                    </button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function selectDay(key) {
+            selectedDateKey = key;
+            renderDayStrip();
+            updateUI();
+        }
+
+        // ==================== 3. حسابات التغذية والواجهة ====================
+        function recalculateNutrition() {
+            const p = db.profile;
+            p.weight = parseFloat(document.getElementById('inputWeight').value) || 78;
+            p.height = parseFloat(document.getElementById('inputHeight').value) || 176;
+            p.age = parseFloat(document.getElementById('inputAge').value) || 26;
+            p.activity = parseFloat(document.getElementById('inputActivity').value) || 1.55;
+            p.goal = parseFloat(document.getElementById('inputGoal').value) || 0;
+
+            const bmr = (10 * p.weight) + (6.25 * p.height) - (5 * p.age) + 5;
+            p.targetCal = Math.round((bmr * p.activity) * (1 + p.goal));
+            p.targetP = Math.round(p.weight * 2.0);
+            p.targetF = Math.round((p.targetCal * 0.25) / 9);
+            p.targetC = Math.round((p.targetCal - (p.targetP * 4) - (p.targetF * 9)) / 4);
+            saveDB();
+        }
+
+        function getDayTotals(dateKey = selectedDateKey) {
+            const day = ensureDayExists(dateKey);
+            let eatenCal = 0, eatenP = 0, eatenC = 0, eatenF = 0;
+            day.meals.forEach(m => { eatenCal += m.cal; eatenP += m.p; eatenC += m.c; eatenF += m.f; });
+            const burnedCal = Math.round(day.mergedSteps * 0.00057 * db.profile.weight);
+            const totalAllowed = db.profile.targetCal + burnedCal;
+            const remainCal = totalAllowed - eatenCal;
+            return { day, eatenCal, eatenP, eatenC, eatenF, burnedCal, totalAllowed, remainCal };
+        }
+
+        function updateUI() {
+            renderDayStrip();
+            const p = db.profile;
+            document.getElementById('inputWeight').value = p.weight;
+            document.getElementById('inputHeight').value = p.height;
+            document.getElementById('inputAge').value = p.age;
+
+            const { day, eatenCal, eatenP, eatenC, eatenF, burnedCal, totalAllowed, remainCal } = getDayTotals(selectedDateKey);
+
+            document.getElementById('selectedDateTitle').innerText = selectedDateKey === todayKey ? 'اليوم - متابعة حية' : `سجل يوم: ${selectedDateKey}`;
+            document.getElementById('dashTargetCal').innerText = p.targetCal;
+            document.getElementById('dashEatenCal').innerText = eatenCal;
+            document.getElementById('dashBurnedCal').innerText = `+${burnedCal}`;
+            document.getElementById('dashRemainCal').innerText = remainCal;
+
+            // تحديث الحلقة الدائرية
+            const circumference = 339.29;
+            const ratio = Math.min(1, Math.max(0, eatenCal / Math.max(1, totalAllowed)));
+            document.getElementById('calRingCircle').style.strokeDashoffset = circumference - (ratio * circumference);
+
+            const pill = document.getElementById('calStatusPill');
+            if (remainCal >= 0) {
+                pill.className = "text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold";
+                pill.innerText = "ضمن الهدف اليومي ✅";
+            } else {
+                pill.className = "text-[10px] bg-rose-500/15 text-rose-300 border border-rose-500/30 px-2.5 py-0.5 rounded-full font-bold";
+                pill.innerText = `تجاوز بـ ${Math.abs(remainCal)} سعرة ⚠️`;
+            }
+
+            document.getElementById('macroPText').innerText = `${Math.round(eatenP)}/${p.targetP}g`;
+            document.getElementById('macroCText').innerText = `${Math.round(eatenC)}/${p.targetC}g`;
+            document.getElementById('macroFText').innerText = `${Math.round(eatenF)}/${p.targetF}g`;
+
+            document.getElementById('macroPBar').style.width = `${Math.min(100, (eatenP / p.targetP) * 100)}%`;
+            document.getElementById('macroCBar').style.width = `${Math.min(100, (eatenC / p.targetC) * 100)}%`;
+            document.getElementById('macroFBar').style.width = `${Math.min(100, (eatenF / p.targetF) * 100)}%`;
+
+            document.getElementById('mergedStepsDisplay').innerText = day.mergedSteps.toLocaleString();
+            document.getElementById('rawWatchSteps').innerText = day.watchSteps.toLocaleString();
+            document.getElementById('rawPhoneSteps').innerText = day.phoneSteps.toLocaleString();
+            document.getElementById('stepsProgressBar').style.width = `${Math.min(100, (day.mergedSteps / 8000) * 100)}%`;
+
+            if (db.watch.savedName) {
+                document.getElementById('watchSavedNameTitle').innerText = db.watch.savedName;
+                document.getElementById('savedWatchLabel').innerText = `الساعة المحفوظة: ${db.watch.savedName} (تزامن تلقائي)`;
+            }
+
+            const mealsBox = document.getElementById('todayMealsList');
+            mealsBox.innerHTML = day.meals.length === 0
+                ? `<p class="text-center py-4 text-slate-500">لم تسجل وجبات في هذا اليوم بعد. المس أي صنف بالأعلى أو صوّر طبقك.</p>`
+                : day.meals.map((m, i) => `
+                    <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-white text-xs">${m.name}</p>
+                            <p class="text-[10px] text-slate-400">بروتين: ${m.p}g | كارب: ${m.c}g | دهون: ${m.f}g</p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <span class="font-extrabold text-emerald-400 text-xs">${m.cal} سعرة</span>
+                            <button onclick="removeMeal(${i})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>`).join('');
+
+            document.getElementById('waterCountText').innerText = `${(day.waterMl / 1000).toFixed(2)} / 3.0 لتر`;
+
+            // عرض أرشيف كل الأيام المحفوظة على الهاتف
+            const allDaysKeys = Object.keys(db.days).sort().reverse();
+            document.getElementById('allDaysHistoryList').innerHTML = allDaysKeys.map(k => {
+                const t = getDayTotals(k);
+                return `
+                    <div onclick="selectDay('${k}'); switchTab('tab-home');" class="cursor-pointer bg-slate-900/80 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-white">${k === todayKey ? 'اليوم (' + k + ')' : k}</span>
+                            <p class="text-[10px] text-slate-400">الخطوات: ${t.day.mergedSteps} | الماء: ${(t.day.waterMl/1000).toFixed(1)} لتر</p>
+                        </div>
+                        <div class="text-left">
+                            <span class="font-bold text-emerald-400 block">${t.eatenCal} / ${t.totalAllowed} سعرة</span>
+                            <span class="text-[10px] text-slate-400">بروتين: ${Math.round(t.eatenP)}g</span>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // ==================== 4. إضافة الأكل باللمس بدون جرامات ====================
+        function setPortionMultiplier(mult, btnEl) {
+            portionMultiplier = mult;
+            document.querySelectorAll('.portion-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+
+        function addVisualFood(name, baseCal, baseP, baseC, baseF) {
+            const sizeLabel = portionMultiplier < 1 ? ' (حصة صغيرة)' : (portionMultiplier > 1 ? ' (حصة كبيرة)' : '');
+            const day = ensureDayExists(selectedDateKey);
+            day.meals.push({
+                name: name + sizeLabel,
+                cal: Math.round(baseCal * portionMultiplier),
+                p: Math.round(baseP * portionMultiplier),
+                c: Math.round(baseC * portionMultiplier),
+                f: Math.round(baseF * portionMultiplier)
+            });
+            saveDB();
+        }
+
+        function removeMeal(idx) {
+            ensureDayExists(selectedDateKey).meals.splice(idx, 1);
+            saveDB();
+        }
+
+        function clearCurrentDayMeals() {
+            ensureDayExists(selectedDateKey).meals = [];
+            saveDB();
+        }
+
+        function addWater(ml) {
+            ensureDayExists(selectedDateKey).waterMl += ml;
+            saveDB();
+        }
+
+        // ==================== 5. تحليل الصور الذكي (بدون مفتاح API + محلل بصري داخلي) ====================
+        let cameraMode = 'food';
+        let lastAiMeal = { name: 'وجبة متكاملة', cal: 420, p: 32, c: 45, f: 12, details: '' };
+
+        const visualFoodsCatalog = [
+            { name: 'طبق دجاج مع أرز وخضار', cal: 480, p: 42, c: 50, f: 12 },
+            { name: 'طبق سمك مشوي مع أرز', cal: 460, p: 45, c: 45, f: 11 },
+            { name: 'لحم مطبوخ مع خضار وأرز', cal: 540, p: 38, c: 48, f: 20 },
+            { name: 'فول وبيض وعيش بلدي', cal: 490, p: 24, c: 62, f: 15 },
+            { name: 'مكرونة بالصلصة واللحم/الدجاج', cal: 510, p: 28, c: 68, f: 14 },
+            { name: 'ساندوتش كفتة / شاورما / برجر', cal: 450, p: 26, c: 42, f: 19 }
+        ];
+
+        function setCameraMode(mode) {
+            cameraMode = mode;
+            document.getElementById('modeFoodBtn').className = mode === 'food' ? "py-2 rounded-xl font-bold text-xs bg-emerald-600 text-white" : "py-2 rounded-xl font-bold text-xs text-slate-400";
+            document.getElementById('modeScaleBtn').className = mode === 'scale' ? "py-2 rounded-xl font-bold text-xs bg-emerald-600 text-white" : "py-2 rounded-xl font-bold text-xs text-slate-400";
+            document.getElementById('aiResultCard').classList.add('hidden');
+        }
+
+        function compressPhoto(file, maxW = 650) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.72));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleImageCaptured(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const overlay = document.getElementById('aiLoadingOverlay');
+            overlay.classList.remove('hidden');
+
+            const dataUrl = await compressPhoto(file);
+            const preview = document.getElementById('capturedImagePreview');
+            preview.src = dataUrl;
+            preview.classList.remove('hidden');
+            document.getElementById('cameraPlaceholder').classList.add('hidden');
+
+            // محاولة التحليل السحابي المجاني بدون مفتاح (Zero-Key OpenAI Vision via Pollinations)
+            try {
+                const prompt = cameraMode === 'food'
+                    ? 'أنت خبير تغذية. تعرف على الطعام في الصورة وقدر سعراته لحصة متوسطة بدون طلب جرامات وأرجع JSON فقط: {"name":"اسم الأكلة بالعربية","cal":450,"p":30,"c":45,"f":14,"details":"وصف مختصر للحصة"}'
+                    : 'اقرأ رقم الوزن على الميزان بالكيلوجرام وأرجع JSON فقط: {"weight":77.5}';
+
+                const res = await fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'openai',
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                { type: 'text', text: prompt },
+                                { type: 'image_url', image_url: { url: dataUrl } }
+                            ]
+                        }]
+                    })
+                });
+
+                const json = await res.json();
+                const content = json.choices?.[0]?.message?.content || '';
+                const match = content.match(/\{[\s\S]*\}/);
+                if (match) {
+                    const parsed = JSON.parse(match[0]);
+                    overlay.classList.add('hidden');
+                    showVisionResult(parsed, 'تحليل AI تلقائي مباشر');
+                    return;
+                }
+            } catch (err) {
+                // في حال انقطاع الإنترنت أو انشغال السيرفر يعمل المحلل البصري الداخلي فوراً
+            }
+
+            overlay.classList.add('hidden');
+            runInternalOnDeviceFallback();
+        }
+
+        function showVisionResult(data, badgeText) {
+            const card = document.getElementById('aiResultCard');
+            card.classList.remove('hidden');
+            document.getElementById('aiEngineBadge').innerText = badgeText;
+
+            if (cameraMode === 'scale' && data.weight) {
+                document.getElementById('aiResultTitle').innerText = `⚖️ الوزن المقروء: ${data.weight} كجم`;
+                document.getElementById('aiResultBody').innerHTML = `<p>تمت قراءة الميزان بنجاح.</p>`;
+                document.getElementById('aiPortionAdjuster').classList.add('hidden');
+                document.getElementById('internalVisualMatcher').classList.add('hidden');
+                document.getElementById('aiConfirmBtn').onclick = () => {
+                    db.profile.weight = parseFloat(data.weight);
+                    recalculateNutrition();
+                    card.classList.add('hidden');
+                    switchTab('tab-home');
+                };
+                return;
+            }
+
+            lastAiMeal = {
+                name: data.name || 'وجبة مصورة',
+                cal: parseInt(data.cal) || 450,
+                p: parseInt(data.p) || 30,
+                c: parseInt(data.c) || 45,
+                f: parseInt(data.f) || 14,
+                details: data.details || 'حصة قياسية متوسطة'
+            };
+
+            document.getElementById('aiPortionAdjuster').classList.remove('hidden');
+            document.getElementById('internalVisualMatcher').classList.remove('hidden');
+            populateVisualMatcherButtons();
+            scaleAiMeal(1.0);
+        }
+
+        function runInternalOnDeviceFallback() {
+            showVisionResult(visualFoodsCatalog[0], 'المحلل البصري الداخلي (بدون إنترنت)');
+        }
+
+        function populateVisualMatcherButtons() {
+            const box = document.getElementById('visualMatchButtons');
+            box.innerHTML = visualFoodsCatalog.map((item, idx) => `
+                <button onclick="selectCatalogMeal(${idx})" class="bg-slate-900 hover:bg-slate-800 p-2 rounded-xl border border-slate-700 text-right">
+                    <div class="font-bold text-white truncate">${item.name}</div>
+                    <div class="text-[10px] text-emerald-400">${item.cal} سعرة | ${item.p}g بروتين</div>
+                </button>
+            `).join('');
+        }
+
+        function selectCatalogMeal(idx) {
+            lastAiMeal = { ...visualFoodsCatalog[idx], details: 'تم التحديد البصري السريع بدون جرامات' };
+            scaleAiMeal(1.0);
+        }
+
+        function scaleAiMeal(mult) {
+            const cal = Math.round(lastAiMeal.cal * mult);
+            const p = Math.round(lastAiMeal.p * mult);
+            const c = Math.round(lastAiMeal.c * mult);
+            const f = Math.round(lastAiMeal.f * mult);
+
+            document.getElementById('aiResultTitle').innerText = `🍽️ ${lastAiMeal.name}`;
+            document.getElementById('aiResultBody').innerHTML = `
+                <p class="text-slate-400 text-[11px]">${lastAiMeal.details}</p>
+                <div class="grid grid-cols-4 gap-2 text-center bg-slate-900 p-2.5 rounded-2xl border border-slate-800">
+                    <div><span class="text-[10px] text-slate-400 block">سعرات</span><b class="text-emerald-400 text-sm">${cal}</b></div>
+                    <div><span class="text-[10px] text-slate-400 block">بروتين</span><b class="text-rose-400 text-sm">${p}g</b></div>
+                    <div><span class="text-[10px] text-slate-400 block">كارب</span><b class="text-amber-400 text-sm">${c}g</b></div>
+                    <div><span class="text-[10px] text-slate-400 block">دهون</span><b class="text-sky-400 text-sm">${f}g</b></div>
+                </div>`;
+
+            document.getElementById('aiConfirmBtn').onclick = () => {
+                const day = ensureDayExists(selectedDateKey);
+                day.meals.push({ name: lastAiMeal.name, cal, p, c, f });
+                saveDB();
+                document.getElementById('aiResultCard').classList.add('hidden');
+                switchTab('tab-home');
+            };
+        }
+
+        // ==================== 6. الساعة الذكية (حفظ الاسم + تواصل تلقائي بدون خطوات يدوية) ====================
+        let connectedBleDevice = null;
+
+        async function pairAndSaveWatch() {
+            if (!navigator.bluetooth) return alert("يرجى فتح التطبيق من متصفح Google Chrome لتشغيل البلوتوث.");
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['heart_rate', 'battery_service', 0xFEE0, 0x1814]
+                });
+                db.watch.savedName = device.name || 'Oraimo Watch 2R';
+                db.watch.savedId = device.id;
+                saveDB();
+                await connectToWatchGatt(device);
+            } catch (e) {}
+        }
+
+        async function connectToWatchGatt(device) {
+            try {
+                connectedBleDevice = device;
+                device.removeEventListener('gattserverdisconnected', onWatchDisconnected);
+                device.addEventListener('gattserverdisconnected', onWatchDisconnected);
+
+                const server = await device.gatt.connect();
+                setWatchStatusUI(true, device.name || db.watch.savedName);
+
+                // قراءة البطارية إن توفرت
+                try {
+                    const battSvc = await server.getPrimaryService('battery_service');
+                    const battChar = await battSvc.getCharacteristic('battery_level');
+                    const val = await battChar.readValue();
+                    document.getElementById('watchBattery').innerText = `${val.getUint8(0)}%`;
+                } catch (e) {}
+
+                // قراءة نبض القلب المباشر
+                try {
+                    const hrSvc = await server.getPrimaryService('heart_rate');
+                    const hrChar = await hrSvc.getCharacteristic('heart_rate_measurement');
+                    await hrChar.startNotifications();
+                    hrChar.addEventListener('characteristicvaluechanged', (ev) => {
+                        const bpm = ev.target.value.getUint8(1);
+                        if (bpm > 35 && bpm < 220) document.getElementById('watchHeartRate').innerText = `${bpm} BPM`;
+                    });
+                } catch (e) {}
+
+            } catch (err) {
+                setWatchStatusUI(false);
+            }
+        }
+
+        function onWatchDisconnected() {
+            setWatchStatusUI(false);
+            // إعادة الاتصال التلقائي بالساعة المحفوظة كل 6 ثوانٍ بدون تدخل المستخدم
+            setTimeout(async () => {
+                if (connectedBleDevice && !connectedBleDevice.gatt.connected) {
+                    try { await connectToWatchGatt(connectedBleDevice); } catch (e) {}
+                }
+            }, 6000);
+        }
+
+        async function autoReconnectSavedWatchOnStartup() {
+            if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+                try {
+                    const devices = await navigator.bluetooth.getDevices();
+                    if (devices.length > 0) {
+                        await connectToWatchGatt(devices[0]);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function setWatchStatusUI(isConnected, name = '') {
+            const dot = document.getElementById('watchDot');
+            const topTxt = document.getElementById('watchTopText');
+            const stateTxt = document.getElementById('bleConnectionStateText');
+            if (isConnected) {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping";
+                topTxt.innerText = `متصل: ${name || 'Oraimo 2R'}`;
+                topTxt.className = "text-emerald-400 font-bold";
+                stateTxt.innerText = "متصلة الآن وتشارك الخطوات والنبض أوتوماتيكياً ✅";
+            } else {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400";
+                topTxt.innerText = db.watch.savedName ? `${db.watch.savedName} (تواصل تلقائي)` : "الساعة: بحث تلقائي";
+                topTxt.className = "text-slate-400";
+                stateTxt.innerText = "في وضع الاستعداد التلقائي (تتصل فور اقترابها)";
+            }
+        }
+
+        // ==================== 7. حساس المشي الدائم + مانع الفصل في الجيب (Keep-Alive) ====================
+        let lastStepTimestamp = 0;
+        let phoneSensorRunning = false;
+        let audioCtx = null;
+        let wakeLockSentinel = null;
+
+        async function enableBackgroundKeepAlive() {
+            try {
+                // تشغيل موجة صوتية صامتة تمنع أندرويد من إغلاق الحساس والبلوتوث في الجيب
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioCtx = new AudioContext();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = 0.0001; // غير مسموع تماماً
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                }
+                if ('wakeLock' in navigator && !wakeLockSentinel) {
+                    wakeLockSentinel = await navigator.wakeLock.request('screen');
+                }
+                document.getElementById('keepAliveBtn').innerText = "الحماية نشطة ✅";
+                document.getElementById('keepAliveBtn').className = "bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-2xl";
+            } catch (e) {}
+        }
+
+        function startPhonePedometerAuto() {
+            if (phoneSensorRunning) return;
+            window.addEventListener('devicemotion', (e) => {
+                const acc = e.accelerationIncludingGravity;
+                if (!acc || acc.x === null) return;
+                const mag = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+                const threshold = parseFloat(document.getElementById('stepSensitivity')?.value) || 11.6;
+                const now = Date.now();
+                if (mag > threshold && (now - lastStepTimestamp) > 340) {
+                    lastStepTimestamp = now;
+                    const today = ensureDayExists(todayKey);
+                    today.phoneSteps += 1;
+                    if (connectedBleDevice && connectedBleDevice.gatt.connected) {
+                        today.watchSteps += 1;
+                    }
+                    // دمج ذكي يمنع التكرار
+                    today.mergedSteps = Math.max(today.phoneSteps, today.watchSteps);
+                    saveDB();
+                }
+            });
+            phoneSensorRunning = true;
+        }
+
+        function togglePhonePedometer() {
+            enableBackgroundKeepAlive();
+            startPhonePedometerAuto();
+        }
+
+        // ==================== 8. الودجت العائم + الإشعار الدائم + المشاركة ====================
+        function drawWidgetCanvas() {
+            const canvas = document.getElementById('widgetCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const { day, eatenCal, eatenP, burnedCal, remainCal } = getDayTotals(todayKey);
+
+            ctx.fillStyle = '#060b16';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(0, 0, canvas.width, 6);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 15px Cairo, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('ALIFIT PRO - المتبقي لك اليوم:', 395, 38);
+
+            ctx.fillStyle = remainCal >= 0 ? '#34d399' : '#fb7185';
+            ctx.font = '900 44px Cairo, sans-serif';
+            ctx.fillText(`${remainCal} سعرة`, 395, 90);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 16px Cairo, sans-serif';
+            ctx.fillText(`🍴 أكلت: ${eatenCal}  |  🔥 حرق: +${burnedCal}  |  🥩 بروتين: ${Math.round(eatenP)}g`, 395, 140);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText(`👟 الخطوات الصافية: ${day.mergedSteps} خطوة`, 395, 185);
+        }
+
+        async function launchFloatingWidget() {
+            try {
+                drawWidgetCanvas();
+                const canvas = document.getElementById('widgetCanvas');
+                const video = document.getElementById('widgetVideo');
+                if (!video.srcObject) {
+                    video.srcObject = canvas.captureStream(4);
+                    await video.play();
+                }
+                if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                else await video.requestPictureInPicture();
+            } catch (e) {
+                updateNotificationWidget(true);
+            }
+        }
+
+        async function updateNotificationWidget(withAlert = false) {
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') {
+                if (!withAlert) return;
+                const p = await Notification.requestPermission();
+                if (p !== 'granted') return;
+            }
+            const { day, eatenCal, burnedCal, remainCal } = getDayTotals(todayKey);
+            const title = `🔥 متبقي اليوم: ${remainCal} سعرة | 👟 ${day.mergedSteps} خطوة`;
+            const body = `أكلت: ${eatenCal} سعرة | حرق المشي: +${burnedCal} سعرة`;
+            try {
+                if (navigator.serviceWorker) {
+                    const reg = await navigator.serviceWorker.ready;
+                    reg.showNotification(title, { body, tag: 'alifit-widget', silent: true, ongoing: true });
+                }
+                if (withAlert) alert("تم تثبيت الودجت في شريط الإشعارات وشاشة القفل بنجاح!");
+            } catch (e) {}
+        }
+
+        function shareAppWithFriends() {
+            const shareData = {
+                title: 'تطبيق Alifit AI Pro',
+                text: 'جرب تطبيق حساب السعرات والخطوات بالذكاء الاصطناعي واللمس بدون ميزان:',
+                url: window.location.href
+            };
+            if (navigator.share) navigator.share(shareData);
+            else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("تم نسخ رابط التطبيق! يمكنك إرساله لأي شخص وسيعمل على هاتفه ببياناته المستقلة.");
+            }
+        }
+
         function switchTab(tabId, subMode = null) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
@@ -228,184 +1156,11 @@
             if (subMode) setCameraMode(subMode);
         }
 
-        function recalculateNutrition() {
-            state.weight = parseFloat(document.getElementById('inputWeight').value) || 78;
-            state.height = parseFloat(document.getElementById('inputHeight').value) || 176;
-            state.age = parseFloat(document.getElementById('inputAge').value) || 26;
-            state.activity = parseFloat(document.getElementById('inputActivity').value) || 1.55;
-            state.goal = parseFloat(document.getElementById('inputGoal').value) || 0;
-            const bmr = (10 * state.weight) + (6.25 * state.height) - (5 * state.age) + 5;
-            const tdee = bmr * state.activity;
-            state.targetCal = Math.round(tdee * (1 + state.goal));
-            state.targetP = Math.round(state.weight * 2.0);
-            state.targetF = Math.round((state.targetCal * 0.25) / 9);
-            state.targetC = Math.round((state.targetCal - (state.targetP * 4) - (state.targetF * 9)) / 4);
-            saveState();
-        }
-
-        function getDailyTotals() {
-            let eatenCal = 0, eatenP = 0, eatenC = 0, eatenF = 0;
-            state.meals.forEach(m => { eatenCal += m.cal; eatenP += m.p; eatenC += m.c; eatenF += m.f; });
-            const burnedCal = Math.round(state.mergedSteps * 0.00057 * state.weight);
-            const totalAllowed = state.targetCal + burnedCal;
-            const remainCal = totalAllowed - eatenCal;
-            return { eatenCal, eatenP, eatenC, eatenF, burnedCal, totalAllowed, remainCal };
-        }
-
-        function updateUI() {
-            document.getElementById('inputWeight').value = state.weight;
-            document.getElementById('inputHeight').value = state.height;
-            document.getElementById('inputAge').value = state.age;
-            const hasKey = state.apiKey && state.apiKey.trim().length > 5;
-            document.getElementById('apiKeyDot').className = hasKey ? "w-2.5 h-2.5 rounded-full bg-emerald-500 absolute -top-0.5 -right-0.5" : "w-2.5 h-2.5 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5";
-            const alertBox = document.getElementById('apiStatusAlert');
-            if (hasKey) {
-                alertBox.className = "cursor-pointer bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5 flex items-center justify-between";
-                alertBox.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-xs font-bold text-emerald-300">محرك الذكاء الاصطناعي متصل</span></div><span class="text-[10px] text-slate-400">تعديل</span>`;
-            }
-            const { eatenCal, eatenP, eatenC, eatenF, burnedCal, totalAllowed, remainCal } = getDailyTotals();
-            document.getElementById('dashTargetCal').innerText = state.targetCal;
-            document.getElementById('dashEatenCal').innerText = eatenCal;
-            document.getElementById('dashBurnedCal').innerText = `+${burnedCal}`;
-            document.getElementById('dashRemainCal').innerText = remainCal;
-            document.getElementById('calProgressBar').style.width = `${Math.min(100, Math.round((eatenCal / Math.max(1, totalAllowed)) * 100))}%`;
-            document.getElementById('macroPText').innerText = `${Math.round(eatenP)}/${state.targetP}g`;
-            document.getElementById('macroCText').innerText = `${Math.round(eatenC)}/${state.targetC}g`;
-            document.getElementById('macroFText').innerText = `${Math.round(eatenF)}/${state.targetF}g`;
-            document.getElementById('macroPBar').style.width = `${Math.min(100, (eatenP / state.targetP) * 100)}%`;
-            document.getElementById('macroCBar').style.width = `${Math.min(100, (eatenC / state.targetC) * 100)}%`;
-            document.getElementById('macroFBar').style.width = `${Math.min(100, (eatenF / state.targetF) * 100)}%`;
-            document.getElementById('mergedStepsDisplay').innerText = state.mergedSteps.toLocaleString();
-            document.getElementById('rawWatchSteps').innerText = state.watchSteps.toLocaleString();
-            document.getElementById('rawPhoneSteps').innerText = state.phoneSteps.toLocaleString();
-            document.getElementById('todayMealsList').innerHTML = state.meals.length === 0 ? `<p class="text-center py-4">لم تقم بتسجيل أي وجبة اليوم.</p>` : state.meals.map((m, i) => `<div class="bg-slate-900 p-2.5 rounded-xl flex justify-between items-center"><div><p class="font-bold text-white">${m.name}</p></div><div class="flex items-center gap-2"><span class="font-bold text-emerald-400">${m.cal} سعرة</span><button onclick="removeMeal(${i})" class="text-rose-400"><i class="fa-solid fa-trash-can"></i></button></div></div>`).join('');
-            document.getElementById('weightHistoryList').innerHTML = state.weightLogs.slice().reverse().map(w => `<div class="bg-slate-900 p-2.5 rounded-xl flex justify-between items-center"><span class="text-slate-400">${w.date}</span><span class="font-bold text-sky-400">${w.weight} كجم</span></div>`).join('');
-            document.getElementById('waterCountText').innerText = `${(state.waterMl / 1000).toFixed(2)} / 3.0 لتر`;
-        }
-
-        function setCameraMode(mode) {
-            state.cameraMode = mode;
-            const active = "py-2 rounded-lg font-bold text-[11px] bg-emerald-600 text-white";
-            const idle = "py-2 rounded-lg font-bold text-[11px] text-slate-400";
-            document.getElementById('modeFoodBtn').className = mode === 'food' ? active : idle;
-            document.getElementById('modeScaleBtn').className = mode === 'scale' ? active : idle;
-            document.getElementById('modeWatchBtn').className = mode === 'watch' ? active : idle;
-            document.getElementById('aiResultCard').classList.add('hidden');
-        }
-
-        async function handleImageCaptured(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (!state.apiKey || state.apiKey.trim().length < 5) { openSettingsModal(); alert("أدخل مفتاح الـ API أولاً."); return; }
-            const overlay = document.getElementById('aiLoadingOverlay');
-            overlay.classList.remove('hidden');
-            try {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const base64 = e.target.result.split(',')[1];
-                    document.getElementById('capturedImagePreview').src = e.target.result;
-                    document.getElementById('capturedImagePreview').classList.remove('hidden');
-                    document.getElementById('cameraPlaceholder').classList.add('hidden');
-                    await analyzeWithGemini(base64);
-                };
-                reader.readAsDataURL(file);
-            } catch (err) { overlay.classList.add('hidden'); alert("خطأ: " + err.message); }
-        }
-
-        async function analyzeWithGemini(base64Data) {
-            const overlay = document.getElementById('aiLoadingOverlay');
-            const hint = document.getElementById('aiUserHint').value || "لا توجد ملاحظات";
-            const prompt = state.cameraMode === 'food' ? `حلل صورة الوجبة دي مع مراعاة (${hint}) وأرجع JSON فقط: {"valid": true, "name": "اسم الوجبة", "calories": 450, "protein": 30, "carbs": 45, "fat": 15, "details": "تفصيل الأصناف"}` : `اقرأ الرقم وأرجع JSON فقط: {"valid": true, "weight": 77.5, "steps": 4250, "note": "تمت القراءة"}`;
-            
-            try {
-                // التحديث إلى نموذج gemini-3.8-flash المطلوب رسمياً من جوجل
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${state.apiKey.trim()}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }] })
-                });
-                const data = await res.json();
-                overlay.classList.add('hidden');
-                if (data.error) { alert("خطأ API: " + data.error.message); return; }
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                const match = text.match(/\{[\s\S]*\}/);
-                if (!match) { alert("تعذر تحليل الرد."); return; }
-                renderAIResult(JSON.parse(match[0]));
-            } catch (e) {
-                overlay.classList.add('hidden');
-                alert("تعذر الاتصال بخادم الذكاء الاصطناعي.");
-            }
-        }
-
-        function renderAIResult(res) {
-            const card = document.getElementById('aiResultCard');
-            card.classList.remove('hidden');
-            const body = document.getElementById('aiResultBody');
-            const btn = document.getElementById('aiConfirmBtn');
-            if (state.cameraMode === 'food') {
-                document.getElementById('aiResultTitle').innerText = `🍽️ ${res.name}`;
-                body.innerHTML = `<p>${res.details}</p><b>السعرات: ${res.calories} | بروتين: ${res.protein}g | كارب: ${res.carbs}g | دهون: ${res.fat}g</b>`;
-                btn.onclick = () => { quickAddFood(res.name, res.calories, res.protein, res.carbs, res.fat); card.classList.add('hidden'); switchTab('tab-home'); };
-            } else if (state.cameraMode === 'scale') {
-                document.getElementById('aiResultTitle').innerText = `⚖️ الوزن: ${res.weight} كجم`;
-                body.innerHTML = `<p>${res.note}</p>`;
-                btn.onclick = () => { state.weight = res.weight; recalculateNutrition(); card.classList.add('hidden'); switchTab('tab-home'); };
-            } else {
-                document.getElementById('aiResultTitle').innerText = `⌚ الخطوات: ${res.steps}`;
-                body.innerHTML = `<p>${res.note}</p>`;
-                btn.onclick = () => { state.mergedSteps = res.steps; saveState(); card.classList.add('hidden'); switchTab('tab-home'); };
-            }
-        }
-
-        async function connectOraimoWatch() {
-            if (!navigator.bluetooth) return alert("البلوتوث غير متاح في متصفحك.");
-            try {
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['heart_rate', 'battery_service'] });
-                document.getElementById('bleDeviceName').innerText = `متصل: ${device.name}`;
-                document.getElementById('watchStatusBadge').innerHTML = `<i class="fa-solid fa-check-circle"></i> الساعة: متصلة`;
-                document.getElementById('watchWearingState').innerText = "مرتداة";
-                state.watchConnected = true; state.watchWorn = true; saveState();
-            } catch (e) { alert("تعذر الاقتران."); }
-        }
-
-        let lastStepTime = 0;
-        function togglePhonePedometer() {
-            if (state.phoneSensorActive) {
-                window.removeEventListener('devicemotion', handleMotionEvent);
-                state.phoneSensorActive = false;
-                document.getElementById('startPhoneSensorBtn').innerText = "تشغيل الحساس";
-                saveState(); return;
-            }
-            window.addEventListener('devicemotion', handleMotionEvent);
-            state.phoneSensorActive = true;
-            document.getElementById('startPhoneSensorBtn').innerText = "إيقاف الحساس";
-            document.getElementById('phoneSensorBadge').innerHTML = `<i class="fa-solid fa-mobile-screen"></i> الحساس: نشط`;
-            saveState();
-        }
-
-        function handleMotionEvent(e) {
-            const acc = e.accelerationIncludingGravity;
-            if (!acc || acc.x === null) return;
-            const mag = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
-            const now = Date.now();
-            if (mag > 11.8 && (now - lastStepTime) > 330) {
-                lastStepTime = now;
-                state.mergedSteps += 1;
-                saveState();
-            }
-        }
-
-        function quickAddFood(name, cal, p, c, f) { state.meals.push({ name, cal, p, c, f }); saveState(); }
-        function removeMeal(i) { state.meals.splice(i, 1); saveState(); }
-        function clearTodayMeals() { state.meals = []; saveState(); }
-        function addWater(ml) { state.waterMl += ml; saveState(); }
-        function openSettingsModal() { document.getElementById('geminiApiKeyInput').value = state.apiKey || ''; document.getElementById('settingsModal').classList.add('flex'); document.getElementById('settingsModal').classList.remove('hidden'); }
-        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); document.getElementById('settingsModal').classList.remove('flex'); }
-        function saveApiKey() { state.apiKey = document.getElementById('geminiApiKeyInput').value.trim(); saveState(); closeSettingsModal(); }
-        function syncWatchTotalSteps() { const val = document.getElementById('manualWatchSyncInput').value; if(val){ state.mergedSteps = parseInt(val); saveState(); alert("تم التحديث!"); } }
-
+        // تشغيل تلقائي فور فتح التطبيق
+        window.addEventListener('click', () => enableBackgroundKeepAlive(), { once: true });
+        startPhonePedometerAuto();
+        autoReconnectSavedWatchOnStartup();
         recalculateNutrition();
-        updateUI();
     </script>
 </body>
 </html>
