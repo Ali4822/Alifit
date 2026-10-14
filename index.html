@@ -117,7 +117,7 @@
                 <div class="relative w-full h-56 rounded-2xl bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden">
                     <img id="capturedImagePreview" class="hidden w-full h-full object-cover" alt="Preview">
                     <div id="cameraPlaceholder" class="space-y-2 p-4"><i class="fa-solid fa-camera text-4xl text-slate-600"></i><p class="text-xs text-slate-400">اضغط لتصوير الصورة</p></div>
-                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i><p class="text-xs font-bold text-emerald-300">جاري التحليل عبر Gemini 2.0 Flash...</p></div>
+                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i><p class="text-xs font-bold text-emerald-300">جاري التحليل عبر Gemini 3.8 Flash...</p></div>
                 </div>
                 <label class="cursor-pointer bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg">
                     <i class="fa-solid fa-camera"></i><span>فتح الكاميرا والتصوير</span>
@@ -318,8 +318,8 @@
             const prompt = state.cameraMode === 'food' ? `حلل صورة الوجبة دي مع مراعاة (${hint}) وأرجع JSON فقط: {"valid": true, "name": "اسم الوجبة", "calories": 450, "protein": 30, "carbs": 45, "fat": 15, "details": "تفصيل الأصناف"}` : `اقرأ الرقم وأرجع JSON فقط: {"valid": true, "weight": 77.5, "steps": 4250, "note": "تمت القراءة"}`;
             
             try {
-                // التحديث إلى نموذج gemini-2.0-flash المعتمد للصور
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${state.apiKey.trim()}`, {
+                // التحديث إلى نموذج gemini-3.8-flash المطلوب رسمياً من جوجل
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${state.apiKey.trim()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }] })
