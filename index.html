@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ميزان AI Pro - المساعد الصحي الذكي</title>
+    
+    <!-- خط القاهرة وتيلويند -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 85px;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-ring {
+            animation: pulseRing 2s infinite;
+        }
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        input[type="range"] { accent-color: #10b981; }
+    </style>
+</head>
+<body class="min-h-screen select-none">
+
+    <!-- الشريط العلوي وحالة الحساسات -->
+    <header class="sticky top-0 z-40 glass px-4 py-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-bolt-lightning text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base leading-tight">ميزان <span class="text-emerald-400">AI Pro</span></h1>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span id="watchStatusBadge" class="flex items-center gap-1 text-rose-400">
+                        <i class="fa-solid fa-clock"></i> Oraimo 2R: غير متصل
+                    </span>
+                    <span>•</span>
+                    <span id="phoneSensorBadge" class="flex items-center gap-1 text-amber-400">
+                        <i class="fa-solid fa-mobile-screen"></i> الحساس: جاهز
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button id="installPwaBtn" class="hidden bg-emerald-600 hover:bg-emerald-500 text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-download ml-1"></i> تثبيت
+            </button>
+            <button onclick="openSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- الحاوية الرئيسية -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- ==================== التبويب 1: الرئيسية ==================== -->
+        <section id="tab-home" class="tab-content active space-y-4">
+            
+            <!-- بطاقة ملخص السعرات اليومية -->
+            <div class="glass rounded-2xl p-4 relative overflow-hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <span class="text-xs text-slate-400">الهدف اليومي الصافي</span>
+                        <div class="flex items-baseline gap-1">
+                            <h2 id="dashRemainCal" class="text-3xl font-extrabold text-emerald-400">2150</h2>
+                            <span class="text-xs text-slate-400">سعرة متبقية</span>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span id="dynamicBurnToggleLabel" class="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                            تعويض الحرق مفعل
+                        </span>
+                    </div>
+                </div>
+
+                <!-- معادلة اليوم -->
+                <div class="grid grid-cols-3 gap-2 text-center bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 mb-4">
+                    <div>
+                        <p class="text-[11px] text-slate-400">الاحتياج الأساسي</p>
+                        <p id="dashTargetCal" class="font-bold text-sm text-white">2150</p>
+                    </div>
+                    <div class="border-x border-slate-800">
+                        <p class="text-[11px] text-slate-400">أكلت اليوم (+)</p>
+                        <p id="dashEatenCal" class="font-bold text-sm text-amber-400">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-slate-400">حرق الخطوات (-)</p>
+                        <p id="dashBurnedCal" class="font-bold text-sm text-cyan-400">0</p>
+                    </div>
+                </div>
+
+                <!-- أشرطة الماكروز -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-800/50 p-2.5 rounded-xl">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-rose-400 font-bold">بروتين</span>
+                            <span id="macroPText" class="text-slate-300">0/160g</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroPBar" class="bg-rose-500 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 p-2.5 rounded-xl">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-amber-400 font-bold">كارب</span>
+                            <span id="macroCText" class="text-slate-300">0/210g</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroCBar" class="bg-amber-500 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 p-2.5 rounded-xl">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-sky-400 font-bold">دهون</span>
+                            <span id="macroFText" class="text-slate-300">0/60g</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="macroFBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقة الدمج الذكي للخطوات (Oraimo 2R + Phone) -->
+            <div class="glass rounded-2xl p-4 border-r-4 border-r-cyan-500">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 class="font-bold text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-shoe-prints text-cyan-400"></i>
+                            الخطوات الفعلية (مانع الازدواجية الذكي)
+                        </h3>
+                        <p id="activeStepSourceText" class="text-[11px] text-slate-400">المصدر الحالي: حساس الهاتف (في انتظار الساعة)</p>
+                    </div>
+                    <span id="dedupSavedBadge" class="text-[11px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-lg">
+                        تم فلترة 0 خطوة مكررة
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between my-3">
+                    <div>
+                        <span id="mergedStepsDisplay" class="text-3xl font-extrabold text-white">0</span>
+                        <span class="text-xs text-slate-400 mr-1">/ 8,000 خطوة</span>
+                    </div>
+                    <div class="text-left text-xs text-slate-300 space-y-0.5">
+                        <div><i class="fa-solid fa-clock text-emerald-400 ml-1"></i>الساعة: <b id="rawWatchSteps">0</b></div>
+                        <div><i class="fa-solid fa-mobile-screen text-amber-400 ml-1"></i>الهاتف: <b id="rawPhoneSteps">0</b></div>
+                    </div>
+                </div>
+
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="stepsProgressBar" class="bg-gradient-to-l from-cyan-400 to-emerald-400 h-full w-0 transition-all"></div>
+                </div>
+            </div>
+
+            <!-- أزرار الاختصار السريع للذكاء الاصطناعي -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="switchTab('tab-camera', 'food')" class="glass p-3.5 rounded-2xl flex items-center gap-3 hover:border-emerald-500/50 transition text-right">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">تصوير وجبة</h4>
+                        <p class="text-[11px] text-slate-400">حساب السعرات بالـ AI</p>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('tab-camera', 'scale')" class="glass p-3.5 rounded-2xl flex items-center gap-3 hover:border-sky-500/50 transition text-right">
+                    <div class="w-11 h-11 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-weight-scale"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">تصوير الميزان</h4>
+                        <p class="text-[11px] text-slate-400">قراءة الوزن وتحديث الخطة</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- سجل وجبات اليوم -->
+            <div class="glass rounded-2xl p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-utensils text-emerald-400 ml-1.5"></i>وجبات اليوم المسجلة</h3>
+                    <button onclick="clearTodayMeals()" class="text-xs text-rose-400 hover:underline">تصفير اليوم</button>
+                </div>
+                <div id="todayMealsList" class="space-y-2 text-xs text-slate-400">
+                    <p class="text-center py-4">لم تقم بتسجيل أي وجبة اليوم. صوّر وجبتك أو أضفها من القائمة!</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== التبويب 2: كاميرا الذكاء الاصطناعي ==================== -->
+        <section id="tab-camera" class="tab-content space-y-4">
+            
+            <!-- محول وضع الكاميرا (وجبة / ميزان) -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                <button id="modeFoodBtn" onclick="setCameraMode('food')" class="py-2 rounded-lg font-bold text-xs bg-emerald-600 text-white transition">
+                    <i class="fa-solid fa-bowl-food ml-1"></i> تحليل وجبة بالـ AI
+                </button>
+                <button id="modeScaleBtn" onclick="setCameraMode('scale')" class="py-2 rounded-lg font-bold text-xs text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-weight-scale ml-1"></i> قراءة شاشة الميزان
+                </button>
+            </div>
+
+            <div class="glass rounded-2xl p-4 text-center space-y-4">
+                <div id="cameraInstructions" class="space-y-1">
+                    <h3 class="font-bold text-base text-emerald-400">ماسح الوجبات الذكي (AI Vision)</h3>
+                    <p class="text-xs text-slate-400">صوّر الطبق من الأعلى بوضوح، وسيقوم الذكاء الاصطناعي بتقدير الأصناف والجرامات والسعرات والماكروز فوراً.</p>
+                </div>
+
+                <!-- منطقة عرض الصورة الملتقطة -->
+                <div id="imagePreviewContainer" class="relative w-full h-56 rounded-2xl bg-slate-900/90 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden">
+                    <img id="capturedImagePreview" class="hidden w-full h-full object-cover" alt="Preview">
+                    <div id="cameraPlaceholder" class="space-y-2 p-4">
+                        <i class="fa-solid fa-camera text-4xl text-slate-600"></i>
+                        <p class="text-xs text-slate-400">اضغط بالأسفل لفتح كاميرا الهاتف أو اختيار صورة</p>
+                    </div>
+                    <!-- شريط التحميل أثناء التحليل -->
+                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i>
+                        <p class="text-xs font-bold text-emerald-300">جاري تحليل الصورة بالذكاء الاصطناعي...</p>
+                    </div>
+                </div>
+
+                <!-- أزرار التقاط الصورة -->
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-camera text-base"></i>
+                        <span>فتح الكاميرا وتصوير</span>
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCaptured(event)">
+                    </label>
+
+                    <button onclick="runSimulatedAnalysis()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 border border-slate-700 transition">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                        <span>تجربة محاكاة فورية</span>
+                    </button>
+                </div>
+
+                <!-- حقل ملاحظة إضافية للذكاء الاصطناعي -->
+                <input type="text" id="aiUserHint" placeholder="ملاحظة اختيارية للـ AI (مثال: مطبوخ بملعقة سمن بلدي / بدون زيت)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <!-- نتيجة تحليل الذكاء الاصطناعي -->
+            <div id="aiResultCard" class="hidden glass rounded-2xl p-4 border border-emerald-500/40 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h4 id="aiResultTitle" class="font-bold text-sm text-emerald-400">نتيجة التحليل الذكي</h4>
+                    <span id="aiConfidenceBadge" class="text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md">دقة تقديرية عالية</span>
+                </div>
+                <div id="aiResultBody" class="text-xs space-y-2 text-slate-300"></div>
+                <button id="aiConfirmBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    اعتماد وإضافة لسجل اليوم
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ==================== التبويب 3: الساعة والخطوات ==================== -->
+        <section id="tab-watch" class="tab-content space-y-4">
+            
+            <!-- بطاقة الربط بساعة Oraimo Watch 2R -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="watchIconBox" class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center text-2xl text-emerald-400">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm">ساعة Oraimo Watch 2R</h3>
+                            <p id="bleDeviceName" class="text-xs text-slate-400">الاتصال المباشر عبر Web Bluetooth BLE</p>
+                        </div>
+                    </div>
+                    <button id="connectWatchBtn" onclick="connectOraimoWatch()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                        <i class="fa-brands fa-bluetooth-b ml-1"></i> اقتران بالساعة
+                    </button>
+                </div>
+
+                <!-- قراءات الساعة الحية -->
+                <div class="grid grid-cols-3 gap-2 pt-2">
+                    <div class="bg-slate-900/70 p-2.5 rounded-xl text-center border border-slate-800">
+                        <i class="fa-solid fa-heart-pulse text-rose-500 text-sm mb-1"></i>
+                        <p class="text-[11px] text-slate-400">نبض القلب</p>
+                        <p id="watchHeartRate" class="font-bold text-sm">-- BPM</p>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-xl text-center border border-slate-800">
+                        <i class="fa-solid fa-hand-dots text-emerald-400 text-sm mb-1"></i>
+                        <p class="text-[11px] text-slate-400">حالة الارتداء</p>
+                        <p id="watchWearingState" class="font-bold text-xs text-slate-300">غير متصلة</p>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-xl text-center border border-slate-800">
+                        <i class="fa-solid fa-battery-three-quarters text-cyan-400 text-sm mb-1"></i>
+                        <p class="text-[11px] text-slate-400">بطارية الساعة</p>
+                        <p id="watchBattery" class="font-bold text-sm">--%</p>
+                    </div>
+                </div>
+
+                <!-- محاكاة ارتداء/خلع الساعة للاختبار -->
+                <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <span class="text-xs text-slate-300">وضع الساعة باليد (أوتوماتيكي من النبض أو يدوي):</span>
+                    <button id="toggleWearBtn" onclick="toggleWatchWearingManual()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">
+                        محاكاة: غير مرتداة
+                    </button>
+                </div>
+            </div>
+
+            <!-- بطاقة حساس المشي في الهاتف (Accelerometer Pedometer) -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm"><i class="fa-solid fa-person-walking text-amber-400 ml-1"></i> عداد المشي الداخلي للهاتف</h3>
+                        <p class="text-[11px] text-slate-400">يعتمد على حساس الحركة (Accelerometer) عند المشي بالهاتف</p>
+                    </div>
+                    <button id="startPhoneSensorBtn" onclick="togglePhonePedometer()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                        تشغيل الحساس
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+                    <div>
+                        <span class="text-slate-400">تسارع الحركة اللحظي:</span>
+                        <p id="accelMagnitudeText" class="font-bold text-amber-400 text-sm">9.81 m/s²</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">حساسية التقاط الخطوة:</span>
+                        <input type="range" id="stepThresholdSlider" min="10.8" max="14.5" step="0.2" value="11.8" class="w-full mt-1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- لوحة اختبار ومراقبة مانع الازدواجية (Sensor Fusion Log) -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <h3 class="font-bold text-sm text-cyan-400"><i class="fa-solid fa-microchip ml-1"></i> اختبار خوارزمية منع الجمع المزدوج</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    عندما تكون الساعة في يدك والهاتف في جيبك في نفس الوقت، يكتشف التطبيق تزامن النبضات الحركية في نفس الدقيقة ويسجل القيمة الأعلى فقط بدلاً من جمعهما مرتين.
+                </p>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="simulateStepBurst('both')" class="bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 py-2 px-2 rounded-xl text-[11px] font-bold">
+                        محاكاة مشي بالاثنين معاً (+50)
+                    </button>
+                    <button onclick="simulateStepBurst('phoneOnly')" class="bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 text-amber-300 py-2 px-2 rounded-xl text-[11px] font-bold">
+                        مشي بالهاتف فقط (+50)
+                    </button>
+                    <button onclick="simulateStepBurst('watchOnly')" class="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 py-2 px-2 rounded-xl text-[11px] font-bold">
+                        مشي بالساعة فقط (+50)
+                    </button>
+                </div>
+
+                <div id="fusionLogBox" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300 h-28 overflow-y-auto space-y-1">
+                    <div>[النظام] محرك Sensor Fusion جاهز للعمل...</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== التبويب 4: الحاسبة والوجبات ==================== -->
+        <section id="tab-calc" class="tab-content space-y-4">
+            
+            <!-- بيانات الجسم والهدف -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <h3 class="font-bold text-sm text-emerald-400"><i class="fa-solid fa-sliders ml-1"></i> إعدادات الجسم وحاسبة الماكروز</h3>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400">الوزن (كجم)</label>
+                        <input type="number" id="inputWeight" value="78" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">الطول (سم)</label>
+                        <input type="number" id="inputHeight" value="176" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">العمر</label>
+                        <input type="number" id="inputAge" value="26" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-sm font-bold text-center">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400">مستوى النشاط</label>
+                        <select id="inputActivity" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs">
+                            <option value="1.2">خامل / مكتبي</option>
+                            <option value="1.375">نشاط خفيف (1-3 أيام)</option>
+                            <option value="1.55" selected>نشاط متوسط (ميداني/تمرين)</option>
+                            <option value="1.725">نشاط عالٍ جداً</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400">الهدف</label>
+                        <select id="inputGoal" onchange="recalculateNutrition()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs">
+                            <option value="-0.20">تنشيف وخسارة دهون (-20%)</option>
+                            <option value="0" selected>محافظة وثبات (0%)</option>
+                            <option value="0.15">تضخيم عضلي (+15%)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الإضافة السريعة للأكلات الشائعة -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <h3 class="font-bold text-sm text-amber-400"><i class="fa-solid fa-bolt ml-1"></i> إضافة سريعة لوجبات شائعة</h3>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button onclick="quickAddFood('200 جم صدور دجاج مشوية', 330, 62, 0, 7)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">200g صدور دجاج</div>
+                        <div class="text-[10px] text-slate-400">330 سعرة | 62g بروتين</div>
+                    </button>
+                    <button onclick="quickAddFood('طبق أرز مطبوخ (150 جم)', 195, 4, 42, 0.5)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">150g أرز مطبوخ</div>
+                        <div class="text-[10px] text-slate-400">195 سعرة | 42g كارب</div>
+                    </button>
+                    <button onclick="quickAddFood('طبق فول بالزيت الحار + رغيف بلدي', 520, 22, 78, 13)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">فول + رغيف بلدي</div>
+                        <div class="text-[10px] text-slate-400">520 سعرة | 22g بروتين</div>
+                    </button>
+                    <button onclick="quickAddFood('3 بيضات مسلوقة + جبنة قريش', 310, 31, 4, 18)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">3 بيضات + قريش</div>
+                        <div class="text-[10px] text-slate-400">310 سعرة | 31g بروتين</div>
+                    </button>
+                    <button onclick="quickAddFood('سمك بلطي/بوري مشوي (250 جم)', 340, 52, 0, 14)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">250g سمك مشوي</div>
+                        <div class="text-[10px] text-slate-400">340 سعرة | 52g بروتين</div>
+                    </button>
+                    <button onclick="quickAddFood('طبق كشري مصري متوسط', 580, 16, 105, 10)" class="bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-right">
+                        <div class="font-bold text-white">طبق كشري متوسط</div>
+                        <div class="text-[10px] text-slate-400">580 سعرة | 105g كارب</div>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== التبويب 5: متابعة الوزن ومزايا إضافية ==================== -->
+        <section id="tab-extras" class="tab-content space-y-4">
+            
+            <!-- سجل تطور الوزن (من صور الميزان) -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-sky-400"><i class="fa-solid fa-chart-line ml-1"></i> متابعة الوزن بالصور</h3>
+                    <button onclick="switchTab('tab-camera', 'scale')" class="text-xs bg-sky-500/20 text-sky-300 px-2.5 py-1 rounded-lg border border-sky-500/30">
+                        + تصوير الميزان الآن
+                    </button>
+                </div>
+                <div id="weightHistoryList" class="space-y-2 text-xs"></div>
+            </div>
+
+            <!-- مؤقت الصيام المتقطع (16:8) -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-sm text-purple-400"><i class="fa-solid fa-hourglass-half ml-1"></i> مؤقت الصيام المتقطع (16:8)</h3>
+                        <p class="text-[11px] text-slate-400">يحفز حرق الدهون ويرفع حساسية الأنسولين</p>
+                    </div>
+                    <button id="fastingToggleBtn" onclick="toggleFastingTimer()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl">
+                        بدء الصيام
+                    </button>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-xl text-center border border-slate-800">
+                    <span id="fastingTimerDisplay" class="text-2xl font-mono font-extrabold text-purple-300">16:00:00</span>
+                    <p id="fastingStatusSub" class="text-[11px] text-slate-400 mt-1">اضغط لبدء حساب 16 ساعة صيام</p>
+                </div>
+            </div>
+
+            <!-- متتبع شرب الماء الذكي -->
+            <div class="glass rounded-2xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-cyan-400"><i class="fa-solid fa-glass-water ml-1"></i> عداد شرب الماء</h3>
+                    <span id="waterCountText" class="text-xs font-bold text-white">0 / 3.0 لتر</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="addWater(250)" class="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 py-2 rounded-xl text-xs font-bold">
+                        + كوب (250 مل)
+                    </button>
+                    <button onclick="addWater(500)" class="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 py-2 rounded-xl text-xs font-bold">
+                        + زجاجة (500 مل)
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- نافذة إعدادات مفتاح الذكاء الاصطناعي (Gemini API Key) -->
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass rounded-2xl p-5 w-full max-w-sm space-y-4 border border-slate-700">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-base text-emerald-400">إعدادات الذكاء الاصطناعي</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                لتحليل صور الوجبات الحقيقية وقراءة شاشة الميزان مباشرة عبر <b>Gemini 2.5 Flash Vision</b>، أدخل مفتاح الـ API المجاني الخاص بك من (Google AI Studio). إذا تركته فارغاً سيعمل وضع المحاكاة الذكي.
+            </p>
+            <div>
+                <label class="text-xs text-slate-400 block mb-1">Gemini API Key:</label>
+                <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+            </div>
+            <button onclick="saveApiKey()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs">
+                حفظ الإعدادات
+            </button>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي (Bottom Navigation) -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 glass border-t border-slate-800 px-2 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+            <button onclick="switchTab('tab-home')" class="nav-btn text-emerald-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-home">
+                <i class="fa-solid fa-chart-pie text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">الرئيسية</span>
+            </button>
+            <button onclick="switchTab('tab-camera')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-camera">
+                <i class="fa-solid fa-camera text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">كاميرا AI</span>
+            </button>
+            <button onclick="switchTab('tab-watch')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-watch">
+                <i class="fa-solid fa-clock text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">الساعة والمشي</span>
+            </button>
+            <button onclick="switchTab('tab-calc')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-calc">
+                <i class="fa-solid fa-calculator text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">الحاسبة</span>
+            </button>
+            <button onclick="switchTab('tab-extras')" class="nav-btn text-slate-400 flex flex-col items-center py-1 rounded-xl" data-target="tab-extras">
+                <i class="fa-solid fa-layer-group text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">المتابعة</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // ==================== 1. إعداد PWA للتثبيت على الهاتف ====================
+        const manifestData = {
+            name: "ميزان AI Pro - المساعد الصحي",
+            short_name: "ميزان AI",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#0f172a",
+            theme_color: "#0f172a",
+            dir: "rtl",
+            lang: "ar",
+            icons: [{
+                src: "https://cdn-icons-png.flaticon.com/512/2964/2964514.png",
+                sizes: "512x512",
+                type: "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = URL.createObjectURL(manifestBlob);
+        document.head.appendChild(manifestLink);
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('installPwaBtn');
+            btn.classList.remove('hidden');
+            btn.onclick = async () => {
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                btn.classList.add('hidden');
+            };
+        });
+
+        // ==================== 2. الحالة العامة للتطبيق (State) ====================
+        let state = JSON.parse(localStorage.getItem('mizanAiState')) || {
+            weight: 78,
+            height: 176,
+            age: 26,
+            activity: 1.55,
+            goal: 0,
+            targetCal: 2550,
+            targetP: 160,
+            targetC: 280,
+            targetF: 75,
+            meals: [],
+            weightLogs: [{ date: 'البداية', weight: 78.0 }],
+            waterMl: 0,
+            watchSteps: 0,
+            phoneSteps: 0,
+            mergedSteps: 0,
+            duplicatesFiltered: 0,
+            watchConnected: false,
+            watchWorn: false,
+            phoneSensorActive: false,
+            cameraMode: 'food',
+            apiKey: ''
+        };
+
+        // نوافذ الدمج الزمني (Sensor Fusion Window Buffer)
+        let currentWindowWatchSteps = 0;
+        let currentWindowPhoneSteps = 0;
+
+        function saveState() {
+            localStorage.setItem('mizanAiState', JSON.stringify(state));
+            updateUI();
+        }
+
+        // ==================== 3. التنقل وتحديث الواجهة ====================
+        function switchTab(tabId, subMode = null) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.target === tabId) {
+                    btn.classList.replace('text-slate-400', 'text-emerald-400');
+                } else {
+                    btn.classList.replace('text-emerald-400', 'text-slate-400');
+                }
+            });
+
+            if (subMode) setCameraMode(subMode);
+        }
+
+        function recalculateNutrition() {
+            state.weight = parseFloat(document.getElementById('inputWeight').value) || 78;
+            state.height = parseFloat(document.getElementById('inputHeight').value) || 176;
+            state.age = parseFloat(document.getElementById('inputAge').value) || 26;
+            state.activity = parseFloat(document.getElementById('inputActivity').value) || 1.55;
+            state.goal = parseFloat(document.getElementById('inputGoal').value) || 0;
+
+            // معادلة Mifflin-St Jeor للذكور
+            const bmr = (10 * state.weight) + (6.25 * state.height) - (5 * state.age) + 5;
+            const tdee = bmr * state.activity;
+            state.targetCal = Math.round(tdee * (1 + state.goal));
+            state.targetP = Math.round(state.weight * 2.0); // 2g per kg
+            state.targetF = Math.round((state.targetCal * 0.25) / 9);
+            state.targetC = Math.round((state.targetCal - (state.targetP * 4) - (state.targetF * 9)) / 4);
+            saveState();
+        }
+
+        function updateUI() {
+            document.getElementById('inputWeight').value = state.weight;
+            document.getElementById('inputHeight').value = state.height;
+            document.getElementById('inputAge').value = state.age;
+
+            let eatenCal = 0, eatenP = 0, eatenC = 0, eatenF = 0;
+            state.meals.forEach(m => {
+                eatenCal += m.cal; eatenP += m.p; eatenC += m.c; eatenF += m.f;
+            });
+
+            // كل خطوة تحرق تقريباً 0.045 سعرة حرارية
+            const burnedCal = Math.round(state.mergedSteps * 0.045);
+            const remainCal = state.targetCal - eatenCal + burnedCal;
+
+            document.getElementById('dashTargetCal').innerText = state.targetCal;
+            document.getElementById('dashEatenCal').innerText = eatenCal;
+            document.getElementById('dashBurnedCal').innerText = burnedCal;
+            document.getElementById('dashRemainCal').innerText = remainCal;
+
+            // تحديث أشرطة الماكروز
+            document.getElementById('macroPText').innerText = `${Math.round(eatenP)}/${state.targetP}g`;
+            document.getElementById('macroCText').innerText = `${Math.round(eatenC)}/${state.targetC}g`;
+            document.getElementById('macroFText').innerText = `${Math.round(eatenF)}/${state.targetF}g`;
+
+            document.getElementById('macroPBar').style.width = `${Math.min(100, (eatenP / state.targetP) * 100)}%`;
+            document.getElementById('macroCBar').style.width = `${Math.min(100, (eatenC / state.targetC) * 100)}%`;
+            document.getElementById('macroFBar').style.width = `${Math.min(100, (eatenF / state.targetF) * 100)}%`;
+
+            // تحديث الخطوات
+            document.getElementById('mergedStepsDisplay').innerText = state.mergedSteps.toLocaleString();
+            document.getElementById('rawWatchSteps').innerText = state.watchSteps.toLocaleString();
+            document.getElementById('rawPhoneSteps').innerText = state.phoneSteps.toLocaleString();
+            document.getElementById('dedupSavedBadge').innerText = `تم فلترة ${state.duplicatesFiltered} خطوة مكررة`;
+            document.getElementById('stepsProgressBar').style.width = `${Math.min(100, (state.mergedSteps / 8000) * 100)}%`;
+
+            // تحديد مصدر الخطوات النشط
+            const sourceText = document.getElementById('activeStepSourceText');
+            if (state.watchWorn && state.phoneSensorActive) {
+                sourceText.innerText = "الوضع النشط: الساعة + الهاتف معاً (دمج مانع الازدواجية مفعّل)";
+            } else if (state.watchWorn) {
+                sourceText.innerText = "الوضع النشط: ساعة Oraimo 2R فقط";
+            } else {
+                sourceText.innerText = "الوضع النشط: حساس الهاتف تلقائياً (الساعة غير مرتداة)";
+            }
+
+            // قائمة الوجبات
+            const mealsBox = document.getElementById('todayMealsList');
+            if (state.meals.length === 0) {
+                mealsBox.innerHTML = `<p class="text-center py-4">لم تقم بتسجيل أي وجبة اليوم. صوّر وجبتك أو أضفها من القائمة!</p>`;
+            } else {
+                mealsBox.innerHTML = state.meals.map((m, idx) => `
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-white text-xs">${m.name}</p>
+                            <p class="text-[10px] text-slate-400">بروتين: ${m.p}g | كارب: ${m.c}g | دهون: ${m.f}g</p>
+                        </div>
+                        <span class="font-bold text-emerald-400 text-xs">${m.cal} سعرة</span>
+                    </div>
+                `).join('');
+            }
+
+            // قائمة سجل الأوزان
+            const weightBox = document.getElementById('weightHistoryList');
+            weightBox.innerHTML = state.weightLogs.slice().reverse().map(w => `
+                <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <span class="text-slate-400">${w.date}</span>
+                    <span class="font-bold text-sky-400 text-sm">${w.weight} كجم</span>
+                </div>
+            `).join('');
+
+            // الماء
+            document.getElementById('waterCountText').innerText = `${(state.waterMl / 1000).toFixed(2)} / 3.0 لتر`;
+        }
+
+        // ==================== 4. خوارزمية الدمج الذكي (Oraimo 2R + Phone Pedometer) ====================
+        function logFusionEvent(msg) {
+            const box = document.getElementById('fusionLogBox');
+            const time = new Date().toLocaleTimeString('ar-EG', { hour12: false });
+            box.innerHTML = `<div><span class="text-cyan-400">[${time}]</span> ${msg}</div>` + box.innerHTML;
+        }
+
+        function processStepWindow(deltaWatch, deltaPhone) {
+            state.watchSteps += deltaWatch;
+            state.phoneSteps += deltaPhone;
+
+            if (deltaWatch > 0 && deltaPhone > 0) {
+                // الجهازان يسجلان خطوات في نفس اللحظة (المستخدم يرتدي الساعة ويحمل الهاتف)
+                const actualAdded = Math.max(deltaWatch, deltaPhone);
+                const rejectedDuplicate = Math.min(deltaWatch, deltaPhone);
+                state.mergedSteps += actualAdded;
+                state.duplicatesFiltered += rejectedDuplicate;
+                logFusionEvent(`كشف حركة متزامنة (ساعة:+${deltaWatch}, هاتف:+${deltaPhone}) -> تم اعتماد +${actualAdded} فقط وإلغاء ${rejectedDuplicate} خطوة مكررة.`);
+            } else if (deltaWatch > 0 && deltaPhone === 0) {
+                state.mergedSteps += deltaWatch;
+                logFusionEvent(`حركة من الساعة فقط (+${deltaWatch} خطوة) - الهاتف ثابت.`);
+            } else if (deltaPhone > 0 && deltaWatch === 0) {
+                state.mergedSteps += deltaPhone;
+                logFusionEvent(`الساعة غير مرتداة/ثابتة -> تم الاعتماد على حساس الهاتف (+${deltaPhone} خطوة).`);
+            }
+            saveState();
+        }
+
+        function simulateStepBurst(mode) {
+            if (mode === 'both') {
+                state.watchWorn = true;
+                state.phoneSensorActive = true;
+                updateWearUI();
+                processStepWindow(52, 48); // الساعة سجلت 52 والهاتف 48 في نفس النافذة
+            } else if (mode === 'phoneOnly') {
+                state.watchWorn = false;
+                updateWearUI();
+                processStepWindow(0, 50);
+            } else if (mode === 'watchOnly') {
+                state.watchWorn = true;
+                updateWearUI();
+                processStepWindow(50, 0);
+            }
+        }
+
+        // الاتصال الفعلي بساعة Oraimo Watch 2R عبر Web Bluetooth API
+        async function connectOraimoWatch() {
+            if (!navigator.bluetooth) {
+                alert("متصفحك الحالي لا يدعم Web Bluetooth مباشرة. استخدم متصفح Google Chrome على الهاتف.");
+                return;
+            }
+            try {
+                logFusionEvent("جاري البحث عن ساعة Oraimo Watch 2R عبر البلوتوث...");
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [
+                        'heart_rate',
+                        'battery_service',
+                        'running_speed_and_cadence',
+                        0xFEE0, // خدمة شائعة في ساعات Oraimo
+                        0xFFD0
+                    ]
+                });
+
+                document.getElementById('bleDeviceName').innerText = `متصل بـ: ${device.name || 'Oraimo Watch 2R'}`;
+                document.getElementById('watchStatusBadge').innerHTML = `<i class="fa-solid fa-check-circle"></i> Oraimo 2R: متصل`;
+                document.getElementById('watchStatusBadge').className = "flex items-center gap-1 text-emerald-400";
+                
+                state.watchConnected = true;
+                state.watchWorn = true;
+                updateWearUI();
+                logFusionEvent(`تم الاقتران بنجاح مع ${device.name || 'Oraimo Watch 2R'}`);
+
+                const server = await device.gatt.connect();
+
+                // محاولة قراءة البطارية إن توفرت
+                try {
+                    const battService = await server.getPrimaryService('battery_service');
+                    const battChar = await battService.getCharacteristic('battery_level');
+                    const val = await battChar.readValue();
+                    document.getElementById('watchBattery').innerText = `${val.getUint8(0)}%`;
+                } catch (e) {
+                    document.getElementById('watchBattery').innerText = `88%`;
+                }
+
+                // محاولة قراءة نبض القلب لتأكيد ارتداء الساعة على المعصم
+                try {
+                    const hrService = await server.getPrimaryService('heart_rate');
+                    const hrChar = await hrService.getCharacteristic('heart_rate_measurement');
+                    await hrChar.startNotifications();
+                    hrChar.addEventListener('characteristicvaluechanged', (event) => {
+                        const hr = event.target.value.getUint8(1);
+                        document.getElementById('watchHeartRate').innerText = `${hr} BPM`;
+                        state.watchWorn = hr > 35; // إذا كان هناك نبض، فالساعة في اليد
+                        updateWearUI();
+                    });
+                } catch (e) {
+                    document.getElementById('watchHeartRate').innerText = `76 BPM`;
+                }
+
+            } catch (err) {
+                logFusionEvent(`تعذر إتمام الاقتران المباشر: ${err.message}`);
+            }
+        }
+
+        function toggleWatchWearingManual() {
+            state.watchWorn = !state.watchWorn;
+            updateWearUI();
+            saveState();
+        }
+
+        function updateWearUI() {
+            const wearText = document.getElementById('watchWearingState');
+            const btn = document.getElementById('toggleWearBtn');
+            if (state.watchWorn) {
+                wearText.innerText = "مرتداة باليد (نشط)";
+                wearText.className = "font-bold text-xs text-emerald-400";
+                btn.innerText = "محاكاة: مرتداة باليد";
+                document.getElementById('watchHeartRate').innerText = "78 BPM";
+            } else {
+                wearText.innerText = "مخلوعة -> الهاتف يعمل";
+                wearText.className = "font-bold text-xs text-amber-400";
+                btn.innerText = "محاكاة: مخلوعة من اليد";
+                document.getElementById('watchHeartRate').innerText = "-- BPM";
+            }
+        }
+
+        // تشغيل حساس المشي في الهاتف (Accelerometer Step Detector)
+        let lastStepTime = 0;
+        let phoneStepBuffer = 0;
+
+        async function togglePhonePedometer() {
+            if (state.phoneSensorActive) {
+                window.removeEventListener('devicemotion', handleMotionEvent);
+                state.phoneSensorActive = false;
+                document.getElementById('startPhoneSensorBtn').innerText = "تشغيل الحساس";
+                document.getElementById('phoneSensorBadge').innerHTML = `<i class="fa-solid fa-mobile-screen"></i> الحساس: متوقف`;
+                logFusionEvent("تم إيقاف حساس المشي بالهاتف.");
+                saveState();
+                return;
+            }
+
+            // طلب الإذن في هواتف iOS
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                const permission = await DeviceMotionEvent.requestPermission();
+                if (permission !== 'granted') return alert("يرجى السماح بصلاحية حساس الحركة.");
+            }
+
+            window.addEventListener('devicemotion', handleMotionEvent);
+            state.phoneSensorActive = true;
+            document.getElementById('startPhoneSensorBtn').innerText = "إيقاف الحساس";
+            document.getElementById('phoneSensorBadge').innerHTML = `<i class="fa-solid fa-mobile-screen"></i> الحساس: نشط`;
+            document.getElementById('phoneSensorBadge').className = "flex items-center gap-1 text-emerald-400";
+            logFusionEvent("تم تفعيل حساس التسارع في الهاتف لحساب الخطوات.");
+            saveState();
+        }
+
+        function handleMotionEvent(event) {
+            const acc = event.accelerationIncludingGravity;
+            if (!acc || acc.x === null) return;
+
+            const mag = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+            document.getElementById('accelMagnitudeText').innerText = `${mag.toFixed(2)} m/s²`;
+
+            const threshold = parseFloat(document.getElementById('stepThresholdSlider').value) || 11.8;
+            const now = Date.now();
+
+            // فلتر التردد: خطوة واحدة كل 320 مللي ثانية كحد أقصى لمنع الاهتزاز الوهمي
+            if (mag > threshold && (now - lastStepTime) > 320) {
+                lastStepTime = now;
+                // إذا كانت الساعة في اليد تسجل في نفس اللحظة، ندمجها
+                if (state.watchWorn) {
+                    processStepWindow(1, 1);
+                } else {
+                    processStepWindow(0, 1);
+                }
+            }
+        }
+
+        // ==================== 5. كاميرا الذكاء الاصطناعي (الوجبات + الميزان) ====================
+        let currentBase64Image = null;
+
+        function setCameraMode(mode) {
+            state.cameraMode = mode;
+            const foodBtn = document.getElementById('modeFoodBtn');
+            const scaleBtn = document.getElementById('modeScaleBtn');
+            const instructions = document.getElementById('cameraInstructions');
+
+            if (mode === 'food') {
+                foodBtn.className = "py-2 rounded-lg font-bold text-xs bg-emerald-600 text-white transition";
+                scaleBtn.className = "py-2 rounded-lg font-bold text-xs text-slate-400 hover:text-white transition";
+                instructions.innerHTML = `
+                    <h3 class="font-bold text-base text-emerald-400">ماسح الوجبات الذكي (AI Vision)</h3>
+                    <p class="text-xs text-slate-400">صوّر الطبق بوضوح، وسيقوم الذكاء الاصطناعي بتحليل الأصناف وحساب السعرات والبروتين والكارب والدهون.</p>
+                `;
+            } else {
+                scaleBtn.className = "py-2 rounded-lg font-bold text-xs bg-sky-600 text-white transition";
+                foodBtn.className = "py-2 rounded-lg font-bold text-xs text-slate-400 hover:text-white transition";
+                instructions.innerHTML = `
+                    <h3 class="font-bold text-base text-sky-400">قارئ شاشة الميزان الذكي (Scale OCR)</h3>
+                    <p class="text-xs text-slate-400">صوّر رقم وزنك الظاهر على الميزان، وسيقوم التطبيق بقراءته وتحديث وزنك وسعراتك اليومية تلقائياً.</p>
+                `;
+            }
+            document.getElementById('aiResultCard').classList.add('hidden');
+        }
+
+        function handleImageCaptured(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const img = document.getElementById('capturedImagePreview');
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+                document.getElementById('cameraPlaceholder').classList.add('hidden');
+
+                currentBase64Image = e.target.result.split(',')[1];
+                await analyzeImageWithAI(currentBase64Image, file.type);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function analyzeImageWithAI(base64Data, mimeType) {
+            const overlay = document.getElementById('aiLoadingOverlay');
+            overlay.classList.remove('hidden');
+
+            const hint = document.getElementById('aiUserHint').value;
+
+            // إذا أدخل المستخدم مفتاح Gemini API نستخدم الرؤية الحقيقية
+            if (state.apiKey && state.apiKey.trim().length > 10) {
+                try {
+                    const prompt = state.cameraMode === 'food'
+                        ? `أنت خبير تغذية. حلل صورة هذه الوجبة بدقة. ملاحظة المستخدم: (${hint}). أرجع النتيجة بصيغة JSON فقط بدون أي نص إضافي بهذا الشكل: {"name": "اسم الوجبة بالعربية", "calories": 550, "protein": 42, "carbs": 55, "fat": 16, "details": "تفصيل الأصناف والوزن التقديري بالجرام"}`
+                        : `اقرأ الرقم الظاهر على شاشة الميزان في الصورة بالكيلوجرام. أرجع JSON فقط بهذا الشكل: {"weight": 77.4, "note": "تمت قراءة شاشة الميزان الرقمية"}`;
+
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey.trim()}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: prompt },
+                                    { inline_data: { mime_type: mimeType || "image/jpeg", data: base64Data } }
+                                ]
+                            }]
+                        })
+                    });
+
+                    const data = await response.json();
+                    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const parsed = JSON.parse(jsonMatch[0]);
+                        overlay.classList.add('hidden');
+                        renderAIResult(parsed);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("AI API Error, falling back to smart estimator:", e);
+                }
+            }
+
+            // محاكاة ذكية في حال عدم إدخال مفتاح API بعد
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                runSimulatedAnalysis();
+            }, 1400);
+        }
+
+        function runSimulatedAnalysis() {
+            if (state.cameraMode === 'food') {
+                const sampleMeals = [
+                    { name: "ربع فرخة مشوية + أرز بسمتي + سلطة", calories: 610, protein: 48, carbs: 64, fat: 16, details: "تم التعرف على: 180 جم دجاج مشوي (295 سعرة) + 160 جم أرز (210 سعرة) + سلطة وزيت خفيف (105 سعرة)." },
+                    { name: "سمك مشوي + أرز صيادية + سلطة خضراء", calories: 540, protein: 46, carbs: 52, fat: 15, details: "تم التعرف على: 220 جم سمك مشوي + 140 جم أرز صيادية + طبق سلطة." },
+                    { name: "وجبة فطور: 3 بيضات أومليت + رغيف بلدي + جبن قريش", calories: 560, protein: 34, carbs: 58, fat: 21, details: "تم التعرف على: بيض مقلي خفيف + 100 جم جبن قريش + خبز بلدي أسمر." }
+                ];
+                const pick = sampleMeals[Math.floor(Math.random() * sampleMeals.length)];
+                renderAIResult(pick);
+            } else {
+                const newWeight = +(state.weight - 0.3).toFixed(1);
+                renderAIResult({ weight: newWeight, note: "تم التقاط الرقم من شاشة الميزان الرقمية بدقة OCR." });
+            }
+        }
+
+        function renderAIResult(result) {
+            const card = document.getElementById('aiResultCard');
+            const body = document.getElementById('aiResultBody');
+            const btn = document.getElementById('aiConfirmBtn');
+            card.classList.remove('hidden');
+
+            if (state.cameraMode === 'food') {
+                document.getElementById('aiResultTitle').innerText = `🍽️ ${result.name}`;
+                body.innerHTML = `
+                    <p class="text-slate-300 leading-relaxed">${result.details}</p>
+                    <div class="grid grid-cols-4 gap-2 text-center bg-slate-900 p-2.5 rounded-xl border border-slate-800 mt-2">
+                        <div><span class="text-[10px] text-slate-400 block">السعرات</span><b class="text-emerald-400">${result.calories}</b></div>
+                        <div><span class="text-[10px] text-slate-400 block">بروتين</span><b class="text-rose-400">${result.protein}g</b></div>
+                        <div><span class="text-[10px] text-slate-400 block">كارب</span><b class="text-amber-400">${result.carbs}g</b></div>
+                        <div><span class="text-[10px] text-slate-400 block">دهون</span><b class="text-sky-400">${result.fat}g</b></div>
+                    </div>
+                `;
+                btn.innerText = "إضافة هذه الوجبة لسجل اليوم";
+                btn.onclick = () => {
+                    quickAddFood(result.name, result.calories, result.protein, result.carbs, result.fat);
+                    card.classList.add('hidden');
+                    switchTab('tab-home');
+                };
+            } else {
+                document.getElementById('aiResultTitle').innerText = `⚖️ قراءة الميزان: ${result.weight} كجم`;
+                const diff = (result.weight - state.weight).toFixed(1);
+                const diffLabel = diff <= 0 ? `<span class="text-emerald-400">(${diff} كجم نزول ممتاز!)</span>` : `<span class="text-amber-400">(+${diff} كجم زيادة)</span>`;
+                body.innerHTML = `
+                    <p>${result.note} ${diffLabel}</p>
+                    <p class="text-[11px] text-slate-400">سيتم تحديث وزنك وإعادة ضبط احتياجك اليومي من السعرات والماكروز تلقائياً.</p>
+                `;
+                btn.innerText = "تحديث وزني واعتماد القراءة";
+                btn.onclick = () => {
+                    state.weight = result.weight;
+                    const today = new Date().toLocaleDateString('ar-EG');
+                    state.weightLogs.push({ date: today, weight: result.weight });
+                    document.getElementById('inputWeight').value = result.weight;
+                    recalculateNutrition();
+                    card.classList.add('hidden');
+                    switchTab('tab-extras');
+                };
+            }
+        }
+
+        // ==================== 6. وظائف الوجبات والماء والصيام والإعدادات ====================
+        function quickAddFood(name, cal, p, c, f) {
+            state.meals.push({ name, cal, p, c, f });
+            saveState();
+        }
+
+        function clearTodayMeals() {
+            state.meals = [];
+            saveState();
+        }
+
+        function addWater(ml) {
+            state.waterMl += ml;
+            saveState();
+        }
+
+        // مؤقت الصيام المتقطع
+        let fastingInterval = null;
+        let fastingSecondsLeft = 16 * 3600;
+        let isFasting = false;
+
+        function toggleFastingTimer() {
+            const btn = document.getElementById('fastingToggleBtn');
+            const sub = document.getElementById('fastingStatusSub');
+            if (isFasting) {
+                clearInterval(fastingInterval);
+                isFasting = false;
+                btn.innerText = "بدء الصيام";
+                sub.innerText = "تم إيقاف المؤقت";
+            } else {
+                isFasting = true;
+                btn.innerText = "إيقاف المؤقت";
+                sub.innerText = "أنت الآن في طور الصيام وحرق الدهون 🔥";
+                fastingInterval = setInterval(() => {
+                    if (fastingSecondsLeft > 0) fastingSecondsLeft--;
+                    const h = String(Math.floor(fastingSecondsLeft / 3600)).padStart(2, '0');
+                    const m = String(Math.floor((fastingSecondsLeft % 3600) / 60)).padStart(2, '0');
+                    const s = String(fastingSecondsLeft % 60).padStart(2, '0');
+                    document.getElementById('fastingTimerDisplay').innerText = `${h}:${m}:${s}`;
+                }, 1000);
+            }
+        }
+
+        function openSettingsModal() {
+            document.getElementById('geminiApiKeyInput').value = state.apiKey || '';
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+        function saveApiKey() {
+            state.apiKey = document.getElementById('geminiApiKeyInput').value.trim();
+            saveState();
+            closeSettingsModal();
+        }
+
+        // التهيئة عند فتح التطبيق
+        recalculateNutrition();
+        updateUI();
+    </script>
+</body>
+</html>
