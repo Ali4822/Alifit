@@ -186,7 +186,7 @@
     <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass rounded-2xl p-5 w-full max-w-sm space-y-4 border border-slate-700">
             <div class="flex justify-between items-center"><h3 class="font-bold text-base text-emerald-400">مفتاح الـ API</h3><button onclick="closeSettingsModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button></div>
-            <p class="text-xs text-slate-300">الصق مفتاح الـ API الخاص بك هنا (سواء يبدأ بـ AIzaSy أو AQ):</p>
+            <p class="text-xs text-slate-300">الصق مفتاح الـ API الخاص بك هنا:</p>
             <input type="text" id="geminiApiKeyInput" placeholder="أدخل المفتاح هنا..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono">
             <button onclick="saveApiKey()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs">حفظ</button>
         </div>
@@ -318,8 +318,8 @@
             const prompt = state.cameraMode === 'food' ? `حلل صورة الوجبة دي مع مراعاة (${hint}) وأرجع JSON فقط: {"valid": true, "name": "اسم الوجبة", "calories": 450, "protein": 30, "carbs": 45, "fat": 15, "details": "تفصيل الأصناف"}` : `اقرأ الرقم وأرجع JSON فقط: {"valid": true, "weight": 77.5, "steps": 4250, "note": "تمت القراءة"}`;
             
             try {
-                // إرسال الطلب مع دعم مفاتيح AQ و AIza المتنوعة عبر Google AI Studio API
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey.trim()}`, {
+                // التحديث إلى نموذج gemini-3.8-flash الأحدث
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${state.apiKey.trim()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }] })
