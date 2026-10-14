@@ -117,7 +117,7 @@
                 <div class="relative w-full h-56 rounded-2xl bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden">
                     <img id="capturedImagePreview" class="hidden w-full h-full object-cover" alt="Preview">
                     <div id="cameraPlaceholder" class="space-y-2 p-4"><i class="fa-solid fa-camera text-4xl text-slate-600"></i><p class="text-xs text-slate-400">اضغط لتصوير الصورة</p></div>
-                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i><p class="text-xs font-bold text-emerald-300">جاري التحليل التلقائي...</p></div>
+                    <div id="aiLoadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-400"></i><p class="text-xs font-bold text-emerald-300">جاري التحليل عبر Gemini 2.0 Flash...</p></div>
                 </div>
                 <label class="cursor-pointer bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg">
                     <i class="fa-solid fa-camera"></i><span>فتح الكاميرا والتصوير</span>
@@ -306,35 +306,25 @@
                     document.getElementById('capturedImagePreview').src = e.target.result;
                     document.getElementById('capturedImagePreview').classList.remove('hidden');
                     document.getElementById('cameraPlaceholder').classList.add('hidden');
-                    await analyzeWithGeminiFallback(base64);
+                    await analyzeWithGemini(base64);
                 };
                 reader.readAsDataURL(file);
             } catch (err) { overlay.classList.add('hidden'); alert("خطأ: " + err.message); }
         }
 
-        async function callGeminiApi(modelName, base64Data, prompt) {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${state.apiKey.trim()}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }] })
-            });
-            return await res.json();
-        }
-
-        async function analyzeWithGeminiFallback(base64Data) {
+        async function analyzeWithGemini(base64Data) {
             const overlay = document.getElementById('aiLoadingOverlay');
             const hint = document.getElementById('aiUserHint').value || "لا توجد ملاحظات";
             const prompt = state.cameraMode === 'food' ? `حلل صورة الوجبة دي مع مراعاة (${hint}) وأرجع JSON فقط: {"valid": true, "name": "اسم الوجبة", "calories": 450, "protein": 30, "carbs": 45, "fat": 15, "details": "تفصيل الأصناف"}` : `اقرأ الرقم وأرجع JSON فقط: {"valid": true, "weight": 77.5, "steps": 4250, "note": "تمت القراءة"}`;
             
             try {
-                // استخدام نموذج gemini-2.5-flash كخيار أول مستقر ودائم الاتصال
-                let data = await callGeminiApi('gemini-2.5-flash', base64Data, prompt);
-                
-                // إذا وجد ضغط، يتم التحول أوتوماتيكياً لنموذج 1.5-flash
-                if (data.error) {
-                    data = await callGeminiApi('gemini-1.5-flash', base64Data, prompt);
-                }
-
+                // التحديث إلى نموذج gemini-2.0-flash المعتمد للصور
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${state.apiKey.trim()}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }] })
+                });
+                const data = await res.json();
                 overlay.classList.add('hidden');
                 if (data.error) { alert("خطأ API: " + data.error.message); return; }
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
